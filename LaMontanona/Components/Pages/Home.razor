@@ -1,0 +1,71 @@
+@page "/"
+
+<PageTitle>Mancomunidad La Montañona · Hábitat para comunidad</PageTitle>
+
+
+<main>
+	<section class="hero">
+		<div class="wrap">
+			<h1>Hábitat para comunidad</h1>
+			<p class="lead">Protegemos el bosque, el agua y los medios de vida de las familias de la Mancomunidad con trabajo técnico, ambiental y comunitario.</p>
+			<div class="grid">
+				<div class="player" id="rio" role="region" aria-label="Programa Somos Río Lempa">
+					<div class="screen">
+						<span class="badge"><i></i>En transmisión</span><div class="cap" id="cap"></div>
+						<svg viewBox="0 0 640 360" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path d="M0 200 120 110l90 70 100-90 130 100 100-70 100 80v160H0z" fill="#16503a" /><path d="M0 250 150 180l110 60 130-70 140 80 110-40v210H0z" fill="#1f6b49" /><path d="M-10 330C120 270 200 300 300 280s220-60 350-20v120H-10z" fill="#4fb4d6" /><path d="M0 345c90-30 190-20 300-30s230-20 340 0" stroke="#bfeaf6" stroke-width="3" fill="none" /></svg>
+					</div>
+					<div class="bar"><button class="pp" id="pp" type="button" aria-label="Pausar">❚❚</button><span id="vt">Somos Río Lempa</span><div class="track"><span id="prog"></span></div></div>
+					<div class="list"><button type="button">Reforestación en la cuenca</button><button type="button">Sistemas agropastoriles</button><button type="button">Agua para las comunidades</button></div>
+				</div>
+				<aside class="obs" aria-labelledby="obs-t">
+					<h2 id="obs-t">El Observatorio Informa</h2><p class="sub">Pronóstico oficial 48 horas · Zona La Montañona</p>
+					<div class="dias" role="tablist"><button type="button" class="dia" role="tab"><b>Hoy</b><span class="t">17–27 °C</span><small>Lluvia hasta 70 %</small></button><button type="button" class="dia" role="tab"><b>Mañana</b><span class="t">18–29 °C</span><small>Lluvia hasta 35 %</small></button></div><div class="horas" id="horas" aria-label="Probabilidad de lluvia cada 3 horas"></div>
+					<div class="alerta" id="al"></div>
+				</aside>
+			</div>
+		</div>
+	</section>
+	<section class="quick" aria-label="Accesos rápidos">
+		<div class="wrap">
+			<a class="urgente" href="#denuncia" data-open><svg viewBox="0 0 24 24"><path d="M12 3 2 20h20zM12 10v4M12 17h.01" /></svg><span><b>Reportar un incidente</b><small>Con fotos y ubicación</small></span></a>
+			<a href="/participantes/registro"><svg viewBox="0 0 24 24"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2M9.5 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM17 10l2 2 3-3" /></svg><span><b>Registro de participantes</b><small>Inscríbete con tu DUI</small></span></a>
+			<a href="#"><svg viewBox="0 0 24 24"><path d="M12 21V8M12 8c-4 0-6-3-6-6 4 0 6 2 6 6zm0 4c4 0 6-3 6-6-4 0-6 2-6 6z" /></svg><span><b>Portal de guardabosques</b><small>Reportes de patrullaje</small></span></a>
+			<a href="#rio"><svg viewBox="0 0 24 24"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z" /></svg><span><b>Pronóstico 48 horas</b><small>El Observatorio Informa</small></span></a>
+		</div>
+	</section>
+	<section class="blk" id="plan">
+		<div class="wrap">
+			<h2>Plan de trabajo: cinco programas</h2><p class="intro">Cada programa une conservación, producción y gobernanza para que el territorio y las familias mejoren juntos.</p>
+			<div class="ejes">
+				<article class="eje"><svg viewBox="0 0 24 24"><path d="M12 21V8M12 8c-4 0-6-3-6-6 4 0 6 2 6 6zm0 4c4 0 6-3 6-6-4 0-6 2-6 6z" /></svg><h3>Bosque y biodiversidad</h3><p>Protección y conservación de ecosistemas y especies.</p></article>
+				<article class="eje"><svg viewBox="0 0 24 24"><path d="M3 20h18M6 20v-6l6-8 6 8v6" /></svg><h3>Restauración y producción sostenible</h3><p>Sistemas agropastoriles que generan ingresos para las familias y recuperan suelos degradados.</p></article>
+				<article class="eje"><svg viewBox="0 0 24 24"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z" /></svg><h3>Gobernanza hídrica</h3><p>Gestión del agua con las comunidades.</p></article>
+				<article class="eje"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6" /></svg><h3>Fortalecimiento institucional</h3><p>Capacidades técnicas y administrativas.</p></article>
+				<article class="eje"><svg viewBox="0 0 24 24"><path d="M3 19 10 6l4 7 3-4 4 10z" /></svg><h3>Desarrollo local y turismo</h3><p>Emprendimientos que cuidan el territorio.</p></article>
+			</div>
+		</div>
+	</section>
+	<section class="blk" id="noticias">
+		<div class="wrap">
+			<h2>Noticias y comunicados</h2><p class="intro">Lo último del trabajo en el territorio. (Textos de ejemplo, se administrarán desde el panel.)</p>
+			<div class="news">
+				<article class="nota"><div class="img"></div><div class="t"><h3>Brigadas comunitarias refuerzan la prevención de incendios</h3><p>Familias y guardabosques coordinan rondas en las zonas más expuestas.</p></div></article>
+				<article class="nota"><div class="img"></div><div class="t"><h3>Nuevos sistemas agropastoriles en marcha</h3><p>Más hogares mejoran sus ingresos sin talar bosque.</p></div></article>
+				<article class="nota"><div class="img"></div><div class="t"><h3>Mesa del agua con las comunidades</h3><p>Acuerdos para cuidar las fuentes de la cuenca.</p></div></article>
+			</div>
+		</div>
+	</section>
+	<section class="blk aliados" id="aliados"><div class="wrap"><h2>Convenios y alianzas</h2><p class="intro">Trabajamos con organizaciones que comparten el compromiso con el territorio.</p><div class="chips"><div>ACACYPAC</div><div>Gobiernos locales</div><div>Cooperación técnica</div></div></div></section>
+</main>
+
+<dialog id="dlg" aria-labelledby="dt">
+	<div class="dh"><h2 id="dt">Reportar un incidente ambiental</h2><button class="x" id="cerrar" type="button" aria-label="Cerrar">✕</button></div>
+	<form id="fi">
+		<label>Tipo de incidente<select required><option value="">Elige una opción</option><option>Incendio o quema</option><option>Tala ilegal</option><option>Caza o tráfico de fauna</option><option>Contaminación de agua</option><option>Otro</option></select></label>
+		<label>Ubicación<span class="row"><input id="ubi" required placeholder="Comunidad, cantón o coordenadas"><button type="button" id="gps">Usar mi ubicación</button></span><small id="gm"></small></label>
+		<label>¿Qué está pasando?<textarea required rows="3"></textarea></label>
+		<label>Fotografía<input type="file" id="foto" accept="image/*"></label><img id="pv" alt="Vista previa de la foto" hidden>
+		<button class="enviar" type="submit">Enviar reporte</button>
+	</form>
+	<div id="ok" hidden><h3>Reporte recibido</h3><p>Gracias. El equipo de salvaguardia lo revisará. Esta es una demostración: aún no se guarda en la base de datos.</p><button type="button" class="enviar" onclick="document.getElementById('dlg').close()">Cerrar</button></div>
+</dialog>

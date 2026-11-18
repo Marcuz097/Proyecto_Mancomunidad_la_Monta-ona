@@ -1,0 +1,150 @@
+﻿@page "/participantes/registro"
+@rendermode InteractiveServer
+@using LaMontanona.Services
+@using LaMontanona.ViewModels
+@inject IParticipanteService Servicio
+
+<PageTitle>Registro único de participantes · La Montañona</PageTitle>
+
+<main class="form-page">
+    <div class="wrap narrow">
+        <h1>Registro único de participantes</h1>
+        <p class="intro">Inscribe a una persona en uno o varios programas. El DUI es único: si ya está registrada, solo se agregan los programas nuevos.</p>
+
+        @if (resultado is not null)
+        {
+            <div class="card-form" role="status">
+                <h2>@Titulo()</h2>
+                <p><b>@resultado.NombreCompleto</b></p>
+                @if (resultado.Agregados.Count > 0)
+                {
+                    <p>Programas agregados:</p>
+                    <ul>@foreach (var n in resultado.Agregados) {
+                        <li>@n</li>
+                    }
+                </ul>
+            }
+            @if (resultado.YaInscritos.Count > 0)
+            {
+                <p class="suave">Ya estaba inscrita en:</p>
+                <ul>@foreach (var n in resultado.YaInscritos) {
+                    <li>@n</li>
+                }
+            </ul>
+        }
+        <div class="acciones">
+            <button class="btn" type="button" @onclick="Nuevo">Registrar a otra persona</button>
+            <a class="btn sec" href="/">Volver al inicio</a>
+        </div>
+    </div>
+}
+    else
+{
+    <EditForm EditContext="ctx" OnValidSubmit="Enviar" class="card-form">
+        <DataAnnotationsValidator />
+        @if (error is not null)
+        {
+            <div class="msg-error" role="alert">@error</div>
+        }
+
+        <div class="cols2">
+            <label class="campo full">
+                DUI
+                <InputText @bind-Value="modelo.DUI" inputmode="numeric" maxlength="10" placeholder="00000000-0" autocomplete="off" />
+                <ValidationMessage For="() => modelo.DUI" />
+                <small>Se escribe con o sin guion y se valida el dígito verificador.</small>
+            </label>
+            <label class="campo">
+                Nombres
+                <InputText @bind-Value="modelo.Nombres" autocomplete="given-name" />
+                <ValidationMessage For="() => modelo.Nombres" />
+            </label>
+            <label class="campo">
+                Apellidos
+                <InputText @bind-Value="modelo.Apellidos" autocomplete="family-name" />
+                <ValidationMessage For="() => modelo.Apellidos" />
+            </label>
+            <label class="campo">
+                Fecha de nacimiento
+                <InputDate @bind-Value="modelo.FechaNacimiento" />
+                <ValidationMessage For="() => modelo.FechaNacimiento" />
+            </label>
+            <label class="campo">
+                Teléfono (opcional)
+                <InputText @bind-Value="modelo.Telefono" inputmode="tel" placeholder="7000-0000" />
+                <ValidationMessage For="() => modelo.Telefono" />
+            </label>
+            <label class="campo">
+                Comunidad
+                <InputText @bind-Value="modelo.Comunidad" />
+                <ValidationMessage For="() => modelo.Comunidad" />
+            </label>
+            <label class="campo">
+                Municipio
+                <InputText @bind-Value="modelo.Municipio" />
+                <ValidationMessage For="() => modelo.Municipio" />
+            </label>
+        </div>
+
+        <fieldset class="progs">
+            <legend>Programas en los que participa</legend>
+            @foreach (var p in programas)
+            {
+                <label class="prog @(Sel(p.Id) ? "on" : "")">
+                    <input type="checkbox" checked="@Sel(p.Id)" @onchange="e => Toggle(p.Id, (bool)e.Value!)" />
+                    <span><b>@p.Nombre</b>@if (!string.IsNullOrWhiteSpace(p.Descripcion)) {
+                        <small>@p.Descripcion</small>
+                    }
+                </span>
+            </label>
+        }
+        <ValidationMessage For="() => modelo.ProgramaIds" />
+    </fieldset>
+
+    <button class="btn" type="submit" disabled="@enviando">@(enviando ? "Guardando…" : "Registrar participante")</button>
+</EditForm>
+    }
+</div>
+</main>
+
+@code {
+    ParticipanteFormModel modelo = new();
+    EditContext ctx = default!;
+    List<Programa> programas = new();
+    RegistroResult? resultado;
+    string? error;
+    bool enviando;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ctx = new EditContext(modelo);
+        programas = await Servicio.ProgramasAsync();
+    }
+
+    bool Sel(int id) => modelo.ProgramaIds.Contains(id);
+
+    void Toggle(int id, bool on)
+    {
+        if (on && !Sel(id)) modelo.ProgramaIds.Add(id);
+        else if (!on) modelo.ProgramaIds.Remove(id);
+        ctx.NotifyFieldChanged(ctx.Field(nameof(modelo.ProgramaIds)));
+    }
+
+    async Task Enviar()
+    {
+        enviando = true; error = null;
+        try { resultado = await Servicio.RegistrarAsync(modelo); }
+        catch (InvalidOperationException ex) { error = ex.Message; }
+        catch (Exception) { error = "No pudimos guardar el registro. Intenta de nuevo."; }
+        finally { enviando = false; }
+    }
+
+    void Nuevo() { modelo = new(); ctx = new EditContext(modelo); resultado = null; error = null; }
+
+    string Titulo() => resultado!.Estado switch
+    {
+        EstadoRegistro.Nuevo => "Registro completado",
+        EstadoRegistro.Actualizado => "Esta persona ya estaba registrada: sumamos programas nuevos",
+        _ => "Esta persona ya estaba inscrita en esos programas"
+    };
+}
