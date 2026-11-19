@@ -339,6 +339,13 @@ section.blk {
     background: var(--papel)
 }
 
+    .eje:nth-child(2) {
+        background: var(--verde);
+        color: #fff;
+        border-color: var(--verde);
+        grid-column: span 2
+    }
+
     .eje svg {
         width: 34px;
         height: 34px;
@@ -425,6 +432,10 @@ footer {
 @media(max-width:860px) {
     .grid {
         grid-template-columns: 1fr
+    }
+
+    .eje:nth-child(2) {
+        grid-column: auto
     }
 
     nav {
@@ -700,16 +711,12 @@ header.main {
 
 .eje {
     cursor: pointer;
-    transition: transform .2s, box-shadow .2s, background-color .25s, color .25s, border-color .25s
+    transition: transform .2s,box-shadow .2s
 }
 
-    .eje:hover,
-    .eje.open {
-        background: var(--verde);
-        color: #fff;
-        border-color: var(--verde);
+    .eje:hover {
         transform: translateY(-3px);
-        box-shadow: 0 12px 26px rgba(14,47,58,.2)
+        box-shadow: 0 12px 26px rgba(14,47,58,.15)
     }
 
     .eje::after {
@@ -998,4 +1005,93 @@ dialog small {
     .cols2 {
         grid-template-columns: 1fr
     }
+}
+
+/* --- Portal de guardabosques --- */
+.campo textarea {
+    font: inherit;
+    padding: 11px 12px;
+    border: 1px solid var(--linea);
+    border-radius: 10px;
+    background: var(--papel);
+    color: var(--tinta);
+    resize: vertical
+}
+
+    .campo textarea:focus {
+        outline: 3px solid var(--rio);
+        outline-offset: 1px
+    }
+
+.campo input[type=file] {
+    padding: 9px;
+    background: var(--hoja)
+}
+
+.card-form h2 {
+    font-size: 1.4rem;
+    color: var(--verde)
+}
+
+.preview {
+    max-width: 100%;
+    max-height: 220px;
+    border-radius: 12px;
+    object-fit: cover;
+    margin-top: 8px
+}
+
+.msg-ok {
+    background: #2f7d4f1f;
+    border-left: 5px solid var(--verde-2);
+    padding: 12px 14px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 18px
+}
+
+.sub {
+    font-size: 1.5rem;
+    color: var(--verde);
+    margin: 40px 0 14px
+}
+
+.reportes {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 12px
+}
+
+.rep {
+    display: flex;
+    gap: 14px;
+    background: var(--papel);
+    border: 1px solid var(--linea);
+    border-radius: 14px;
+    padding: 14px
+}
+
+    .rep img {
+        width: 96px;
+        height: 96px;
+        object-fit: cover;
+        border-radius: 10px;
+        flex: none
+    }
+
+    .rep p {
+        margin: 6px 0 0;
+        font-size: 15px
+    }
+
+@media(max-width:560px) {
+    .rep {
+        flex-direction: column
+    }
+
+        .rep img {
+            width: 100%;
+            height: 160px
+        }
 }

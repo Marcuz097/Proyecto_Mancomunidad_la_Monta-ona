@@ -1,0 +1,118 @@
+@using System.Security.Claims
+@using LaMontanona.Services
+@using LaMontanona.ViewModels
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider Auth
+@inject IReporteGuardabosqueService Servicio
+
+
+    <p class="intro">Hola, <b>@nombre</b>. Registra aquí el reporte de cada patrullaje. <a href="/Identity/Account/Logout">Cerrar sesión</a></p>
+
+    @if (enviado) { <div class="msg-ok" role="status">Reporte enviado. ¡Gracias por tu trabajo!</div> }
+
+    <EditForm EditContext="ctx" OnValidSubmit="Enviar" class="card-form">
+        <DataAnnotationsValidator />
+        @if (error is not null) { <div class="msg-error" role="alert">@error</div> }
+        <h2>Nuevo reporte de patrullaje</h2>
+
+        <div class="cols2">
+            <label class="campo">Fecha del patrullaje
+                <InputDate @bind-Value="modelo.FechaPatrullaje" />
+                <ValidationMessage For="() => modelo.FechaPatrullaje" />
+            </label>
+            <label class="campo">Kilómetros recorridos
+                <InputNumber @bind-Value="modelo.KmRecorridos" step="0.1" inputmode="decimal" />
+                <ValidationMessage For="() => modelo.KmRecorridos" />
+            </label>
+            <label class="campo full">Zona o sector patrullado
+                <InputText @bind-Value="modelo.Zona" placeholder="Ej. Sendero El Mirador, cantón La Montañona" />
+                <ValidationMessage For="() => modelo.Zona" />
+            </label>
+            <label class="campo full">Novedades del patrullaje
+                <InputTextArea @bind-Value="modelo.Novedades" rows="5" placeholder="Qué observaste: incendios, tala, fauna, estado de senderos, personas sin autorización…" />
+                <ValidationMessage For="() => modelo.Novedades" />
+            </label>
+            <div class="campo full">
+                <label>Fotografía (opcional)
+                    <InputFile OnChange="OnFoto" accept="image/*" />
+                </label>
+                @if (fotoError is not null) { <span class="validation-message">@fotoError</span> }
+                @if (fotoPreview is not null) { <img class="preview" src="@fotoPreview" alt="Vista previa de la foto" /> }
+                else if (fotoBytes is not null) { <small>Foto lista: @fotoNombre (@((fotoBytes.Length / 1048576d).ToString("0.0")) MB)</small> }
+            </div>
+        </div>
+
+        <button class="btn" type="submit" disabled="@enviando">@(enviando ? "Enviando…" : "Enviar reporte")</button>
+    </EditForm>
+
+    <h2 class="sub">Mis reportes recientes</h2>
+    @if (recientes.Count == 0) { <p class="suave">Aún no has enviado reportes.</p> }
+    else
+    {
+        <ul class="reportes">
+            @foreach (var r in recientes)
+            {
+                <li class="rep">
+                    @if (r.RutaFoto is not null)
+                    {
+                        <a href="@r.RutaFoto" target="_blank" rel="noopener"><img src="@r.RutaFoto" alt="Foto del patrullaje" loading="lazy" /></a>
+                    }
+                    <div>
+                        <b>@r.Zona</b>
+                        <span class="suave"> · @r.FechaPatrullaje.ToString("dd/MM/yyyy") · @r.KmRecorridos.ToString("0.##") km</span>
+                        <p>@r.Novedades</p>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+
+@code {
+    const long MaxFoto = 5 * 1024 * 1024;
+    static readonly string[] Permitidas = [".jpg", ".jpeg", ".png", ".webp"];
+
+    ReporteFormModel modelo = new();
+    EditContext ctx = default!;
+    List<LaMontanona.Models.ReporteGuardabosque> recientes = new();
+    string userId = "", nombre = "";
+    string? error, fotoError, fotoNombre, fotoPreview;
+    byte[]? fotoBytes;
+    bool enviando, enviado;
+
+    protected override async Task OnInitializedAsync()
+    {
+        ctx = new EditContext(modelo);
+        var user = (await Auth.GetAuthenticationStateAsync()).User;
+        userId = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? "";
+        nombre = user.Identity?.Name ?? "guardabosque";
+        if (userId != "") recientes = await Servicio.MisReportesAsync(userId);
+    }
+
+    async Task OnFoto(InputFileChangeEventArgs e)
+    {
+        fotoError = null; fotoBytes = null; fotoPreview = null; fotoNombre = null;
+        var f = e.File;
+        if (!Permitidas.Contains(Path.GetExtension(f.Name).ToLowerInvariant())) { fotoError = "Usa una foto JPG, PNG o WEBP."; return; }
+        if (f.Size > MaxFoto) { fotoError = "La foto supera los 5 MB."; return; }
+        using var ms = new MemoryStream();
+        await f.OpenReadStream(MaxFoto).CopyToAsync(ms);
+        fotoBytes = ms.ToArray(); fotoNombre = f.Name;
+        if (fotoBytes.Length <= 1_500_000) fotoPreview = $"data:{f.ContentType};base64,{Convert.ToBase64String(fotoBytes)}";
+    }
+
+    async Task Enviar()
+    {
+        enviando = true; error = null; enviado = false;
+        try
+        {
+            await Servicio.CrearAsync(userId, modelo, fotoBytes, fotoNombre);
+            recientes = await Servicio.MisReportesAsync(userId);
+            modelo = new(); ctx = new EditContext(modelo);
+            fotoBytes = null; fotoPreview = null; fotoNombre = null;
+            enviado = true;
+        }
+        catch (InvalidOperationException ex) { error = ex.Message; }
+        catch (Exception) { error = "No pudimos guardar el reporte. Intenta de nuevo."; }
+        finally { enviando = false; }
+    }
+}

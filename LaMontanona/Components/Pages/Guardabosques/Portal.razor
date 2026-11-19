@@ -1,0 +1,12 @@
+@page "/guardabosques"
+@attribute [Authorize(Roles = Roles.Guardabosque + "," + Roles.Admin)]
+@using LaMontanona.Components.Formularios
+
+<PageTitle>Portal de guardabosques · La Montañona</PageTitle>
+
+<main class="form-page">
+<div class="wrap narrow">
+    <h1>Portal de guardabosques</h1>
+    <PortalFormulario @rendermode="InteractiveServer" />
+</div>
+</main>

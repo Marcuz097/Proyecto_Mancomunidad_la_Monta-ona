@@ -1,6 +1,15 @@
+@using Microsoft.AspNetCore.Components.Authorization
 <Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)" />
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)">
+            <NotAuthorized>
+                <main class="form-page"><div class="wrap narrow">
+                    <h1>Acceso restringido</h1>
+                    <p class="intro">Necesitas iniciar sesión con una cuenta autorizada para ver esta sección.</p>
+                    <a class="btn" href="/Identity/Account/Login">Iniciar sesión</a>
+                </div></main>
+            </NotAuthorized>
+        </AuthorizeRouteView>
         <FocusOnNavigate RouteData="routeData" Selector="h1" />
     </Found>
     <NotFound>

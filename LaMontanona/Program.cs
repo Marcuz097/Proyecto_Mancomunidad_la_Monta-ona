@@ -20,6 +20,7 @@ builder.Services.AddRazorPages();                                        // Razo
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<IParticipanteService, ParticipanteService>();
+builder.Services.AddScoped<IReporteGuardabosqueService, ReporteGuardabosqueService>();
 
 var app = builder.Build();
 

@@ -21,12 +21,8 @@ public static class DbSeeder
         foreach (var r in new[] { Roles.Admin, Roles.Guardabosque })
             if (!await roles.RoleExistsAsync(r)) await roles.CreateAsync(new IdentityRole(r));
 
-        var email = cfg["SeedAdmin:Email"]; var pwd = cfg["SeedAdmin:Password"];
-        if (!string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(pwd) && await users.FindByEmailAsync(email) is null)
-        {
-            var u = new IdentityUser { UserName = email, Email = email, EmailConfirmed = true };
-            if ((await users.CreateAsync(u, pwd)).Succeeded) await users.AddToRoleAsync(u, Roles.Admin);
-        }
+        await CrearUsuarioAsync(users, cfg["SeedAdmin:Email"], cfg["SeedAdmin:Password"], Roles.Admin);
+        await CrearUsuarioAsync(users, cfg["SeedGuardabosque:Email"], cfg["SeedGuardabosque:Password"], Roles.Guardabosque);
 
         if (!await db.Pronosticos.AnyAsync())
         {
@@ -40,5 +36,13 @@ public static class DbSeeder
             });
             await db.SaveChangesAsync();
         }
+    }
+
+    private static async Task CrearUsuarioAsync(UserManager<IdentityUser> users, string? email, string? pwd, string rol)
+    {
+        if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(pwd)) return;
+        if (await users.FindByEmailAsync(email) is not null) return;
+        var u = new IdentityUser { UserName = email, Email = email, EmailConfirmed = true };
+        if ((await users.CreateAsync(u, pwd)).Succeeded) await users.AddToRoleAsync(u, rol);
     }
 }
