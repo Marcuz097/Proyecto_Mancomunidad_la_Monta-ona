@@ -339,13 +339,6 @@ section.blk {
     background: var(--papel)
 }
 
-    .eje:nth-child(2) {
-        background: var(--verde);
-        color: #fff;
-        border-color: var(--verde);
-        grid-column: span 2
-    }
-
     .eje svg {
         width: 34px;
         height: 34px;
@@ -432,10 +425,6 @@ footer {
 @media(max-width:860px) {
     .grid {
         grid-template-columns: 1fr
-    }
-
-    .eje:nth-child(2) {
-        grid-column: auto
     }
 
     nav {
@@ -711,12 +700,16 @@ header.main {
 
 .eje {
     cursor: pointer;
-    transition: transform .2s,box-shadow .2s
+    transition: transform .2s, box-shadow .2s, background-color .25s, color .25s, border-color .25s
 }
 
-    .eje:hover {
+    .eje:hover,
+    .eje.open {
+        background: var(--verde);
+        color: #fff;
+        border-color: var(--verde);
         transform: translateY(-3px);
-        box-shadow: 0 12px 26px rgba(14,47,58,.15)
+        box-shadow: 0 12px 26px rgba(14,47,58,.2)
     }
 
     .eje::after {

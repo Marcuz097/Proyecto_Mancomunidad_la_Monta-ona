@@ -2,7 +2,6 @@
 
 <PageTitle>Mancomunidad La Montañona · Hábitat para comunidad</PageTitle>
 
-
 <main>
 	<section class="hero">
 		<div class="wrap">
@@ -10,9 +9,17 @@
 			<p class="lead">Protegemos el bosque, el agua y los medios de vida de las familias de la Mancomunidad con trabajo técnico, ambiental y comunitario.</p>
 			<div class="grid">
 				<div class="player" id="rio" role="region" aria-label="Programa Somos Río Lempa">
-					<div class="screen">
-						<span class="badge"><i></i>En transmisión</span><div class="cap" id="cap"></div>
-						<svg viewBox="0 0 640 360" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><path d="M0 200 120 110l90 70 100-90 130 100 100-70 100 80v160H0z" fill="#16503a" /><path d="M0 250 150 180l110 60 130-70 140 80 110-40v210H0z" fill="#1f6b49" /><path d="M-10 330C120 270 200 300 300 280s220-60 350-20v120H-10z" fill="#4fb4d6" /><path d="M0 345c90-30 190-20 300-30s230-20 340 0" stroke="#bfeaf6" stroke-width="3" fill="none" /></svg>
+					<div class="screen" style="position: relative; overflow: hidden; background: #0c261c;">
+						<span class="badge" style="z-index: 2;"><i></i>En transmisión</span>
+						<div class="cap" id="cap" style="z-index: 2;"></div>
+
+						<div class="hero-slider">
+							<img src="img/SomosRioLempa.jpg" alt="Somos Río Lempa" onclick="verImagen(this.src, this.alt)" />
+							<img src="img/gigante-natural.jpg" alt="Un Gigante Natural" onclick="verImagen(this.src, this.alt)" />
+							<img src="img/fuente-vida.jpg" alt="Fuente de Vida" onclick="verImagen(this.src, this.alt)" />
+							<img src="img/agua-el-salvador.jpg" alt="Aquí está el agua que da vida a El Salvador" onclick="verImagen(this.src, this.alt)" />
+						</div>
+						<span class="zoom-hint" style="z-index: 2;">Clic para ampliar</span>
 					</div>
 					<div class="bar"><button class="pp" id="pp" type="button" aria-label="Pausar">❚❚</button><span id="vt">Somos Río Lempa</span><div class="track"><span id="prog"></span></div></div>
 					<div class="list"><button type="button">Reforestación en la cuenca</button><button type="button">Sistemas agropastoriles</button><button type="button">Agua para las comunidades</button></div>
@@ -47,16 +54,155 @@
 	</section>
 	<section class="blk" id="noticias">
 		<div class="wrap">
-			<h2>Noticias y comunicados</h2><p class="intro">Lo último del trabajo en el territorio. (Textos de ejemplo, se administrarán desde el panel.)</p>
+			<h2>Noticias y comunicados</h2><p class="intro">Haz clic en cualquier imagen para verla en tamaño completo.</p>
 			<div class="news">
-				<article class="nota"><div class="img"></div><div class="t"><h3>Brigadas comunitarias refuerzan la prevención de incendios</h3><p>Familias y guardabosques coordinan rondas en las zonas más expuestas.</p></div></article>
-				<article class="nota"><div class="img"></div><div class="t"><h3>Nuevos sistemas agropastoriles en marcha</h3><p>Más hogares mejoran sus ingresos sin talar bosque.</p></div></article>
-				<article class="nota"><div class="img"></div><div class="t"><h3>Mesa del agua con las comunidades</h3><p>Acuerdos para cuidar las fuentes de la cuenca.</p></div></article>
+				<article class="nota">
+					<div class="img" onclick="verImagen('img/turismo-sendero.jpg', 'Brigadas comunitarias refuerzan la prevención de incendios')">
+						<img src="img/turismo-sendero.jpg" alt="Senderos y bosque en La Montañona" />
+						<span class="zoom-hint">Ampliar</span>
+					</div>
+					<div class="t"><h3>Brigadas comunitarias refuerzan la prevención de incendios</h3><p>Familias y guardabosques coordinan rondas en las zonas más expuestas.</p></div>
+				</article>
+				<article class="nota">
+					<div class="img" onclick="verImagen('img/montanona-destino.jpg', 'La Montañona destino natural')">
+						<img src="img/montanona-destino.jpg" alt="La Montañona destino natural" />
+						<span class="zoom-hint">Ampliar</span>
+					</div>
+					<div class="t"><h3>Nuevos sistemas agropastoriles en marcha</h3><p>Más hogares mejoran sus ingresos sin talar bosque.</p></div>
+				</article>
+				<article class="nota">
+					<div class="img" onclick="verImagen('img/SRLAguayGobernanza.jpg', 'Agua y Gobernanza - Río Lempa')">
+						<img src="img/SRLAguayGobernanza.jpg" alt="Agua y Gobernanza" />
+						<span class="zoom-hint">Ampliar</span>
+					</div>
+					<div class="t"><h3>Mesa del agua con las comunidades</h3><p>Acuerdos para cuidar las fuentes de la cuenca.</p></div>
+				</article>
 			</div>
 		</div>
 	</section>
 	<section class="blk aliados" id="aliados"><div class="wrap"><h2>Convenios y alianzas</h2><p class="intro">Trabajamos con organizaciones que comparten el compromiso con el territorio.</p><div class="chips"><div>ACACYPAC</div><div>Gobiernos locales</div><div>Cooperación técnica</div></div></div></section>
 </main>
+
+<style>
+	.hero-slider {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+	}
+
+		.hero-slider img {
+			position: absolute;
+			inset: 0;
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+			cursor: zoom-in;
+			opacity: 0;
+			pointer-events: none;
+			transition: opacity 0.6s ease;
+		}
+
+			.hero-slider img.active {
+				opacity: 1;
+				pointer-events: auto;
+			}
+
+	/* Control de tarjetas de Noticias sin que home.css las desacomode */
+	#noticias .news .nota {
+		display: flex !important;
+		flex-direction: column !important;
+	}
+
+		#noticias .news .nota .img {
+			position: relative !important;
+			height: 260px !important;
+			width: 100% !important;
+			background: #0d231b !important;
+			overflow: hidden !important;
+			cursor: zoom-in !important;
+			flex-shrink: 0 !important;
+		}
+
+			#noticias .news .nota .img img {
+				width: 100% !important;
+				height: 100% !important;
+				max-width: none !important;
+				object-fit: contain !important;
+				display: block !important;
+				transition: transform 0.25s ease;
+			}
+
+		#noticias .news .nota:first-child .img img {
+			object-fit: cover !important;
+		}
+
+		#noticias .news .nota .t {
+			display: block !important;
+			position: static !important;
+			flex: 1 !important;
+		}
+
+		#noticias .news .nota .img:hover img {
+			transform: scale(1.03);
+		}
+
+	.zoom-hint {
+		position: absolute;
+		bottom: 8px;
+		right: 8px;
+		background: rgba(12, 38, 28, 0.85);
+		color: #ffffff;
+		font-size: 0.75rem;
+		padding: 4px 10px;
+		border-radius: 999px;
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		pointer-events: none;
+	}
+
+	#visorImg {
+		border: none;
+		border-radius: 12px;
+		padding: 12px;
+		background: #0c221a;
+		color: #ffffff;
+		max-width: 92vw;
+		max-height: 92vh;
+		box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75);
+	}
+
+		#visorImg::backdrop {
+			background: rgba(0, 0, 0, 0.82);
+		}
+
+		#visorImg img {
+			max-width: 88vw;
+			max-height: 80vh;
+			width: auto;
+			height: auto;
+			display: block;
+			margin: 0 auto;
+			border-radius: 6px;
+		}
+
+	#rio .cap {
+		background: linear-gradient(to top, rgba(8, 24, 18, 0.94) 0%, rgba(8, 24, 18, 0.72) 70%, transparent 100%) !important;
+		backdrop-filter: blur(4px);
+		color: #ffffff !important;
+		font-weight: 500;
+		text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+		padding: 28px 135px 12px 16px !important; /* Deja espacio libre a la derecha para el botón "Clic para ampliar" */
+		line-height: 1.35;
+	}
+</style>
+
+<dialog id="visorImg" onclick="if(event.target === this) this.close()">
+	<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:16px;">
+		<strong id="visorTitulo" style="font-size: 0.95rem;"></strong>
+		<button type="button" onclick="document.getElementById('visorImg').close()" style="background:#d97724; color:#fff; border:none; border-radius:6px; padding:4px 10px; cursor:pointer; font-weight:600;">Cerrar ✕</button>
+	</div>
+	<img id="visorFoto" src="" alt="Vista ampliada" />
+</dialog>
 
 <dialog id="dlg" aria-labelledby="dt">
 	<div class="dh"><h2 id="dt">Reportar un incidente ambiental</h2><button class="x" id="cerrar" type="button" aria-label="Cerrar">✕</button></div>
@@ -69,3 +215,11 @@
 	</form>
 	<div id="ok" hidden><h3>Reporte recibido</h3><p>Gracias. El equipo de salvaguardia lo revisará. Esta es una demostración: aún no se guarda en la base de datos.</p><button type="button" class="enviar" onclick="document.getElementById('dlg').close()">Cerrar</button></div>
 </dialog>
+
+<script>
+	function verImagen(ruta, titulo) {
+		document.getElementById('visorFoto').src = ruta;
+		document.getElementById('visorTitulo').textContent = titulo;
+		document.getElementById('visorImg').showModal();
+	}
+</script>
