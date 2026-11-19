@@ -1,15 +1,59 @@
 @inherits LayoutComponentBase
 
 <div class="topbar"><div class="wrap"><span>Mancomunidad La Montañona · 25 años cuidando el territorio</span><span><a href="tel:23012376">☎ 2301-2376</a><a href="https://wa.me/50368615665">WhatsApp 6861-5665</a></span></div></div>
-<header class="main"><div class="wrap">
-<a class="logo" href="/"><svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="22" fill="#1f5c3a"/><path d="M5 31 15 15l6 9 5-7 13 14z" fill="#e8f1ea"/><path d="M4 36q9-5 18 0t18 0" stroke="#7fd0e8" stroke-width="3" fill="none"/></svg><span><b>La Montañona</b><small>Hábitat para comunidad</small></span></a>
-<nav aria-label="Principal"><a href="/#plan">Plan de trabajo</a><a href="/#rio">Somos Río Lempa</a><a href="/#aliados">Alianzas</a><a href="#contacto">Contacto</a><a href="/Identity/Account/Login">Acceso</a><a class="cta" href="/#denuncia" data-open>Hacer una denuncia</a></nav>
-</div></header>
+<header class="main">
+    <div class="wrap">
+        <a class="logo" href="/" aria-label="La Montañona Mancomunidad">
+            <svg viewBox="0 0 380 155" style="height: 56px; width: auto; display: block;">
+                <defs>
+                    <linearGradient id="colinaGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#174d1b" />
+                        <stop offset="50%" stop-color="#489e2c" />
+                        <stop offset="100%" stop-color="#9ad121" />
+                    </linearGradient>
+                </defs>
+
+                <!-- Troncos -->
+                <rect x="115" y="72" width="4.5" height="18" fill="#2b1d0e" />
+                <rect x="138" y="72" width="4.5" height="16" fill="#3d2914" />
+                <rect x="161" y="72" width="4.5" height="14" fill="#593c1d" />
+                <rect x="184" y="72" width="4.5" height="13" fill="#785026" />
+                <rect x="207" y="72" width="4.5" height="14" fill="#946431" />
+                <rect x="230" y="72" width="4.5" height="16" fill="#ad773e" />
+                <rect x="253" y="72" width="4.5" height="18" fill="#c78d4e" />
+
+                <!-- 7 árboles superpuestos en degradado -->
+                <path d="M117 10 C102 42, 100 76, 117 76 C134 76, 132 42, 117 10 Z" fill="#0d3b14" />
+                <path d="M140 10 C125 42, 123 76, 140 76 C157 76, 155 42, 140 10 Z" fill="#1e5c1f" />
+                <path d="M163 10 C148 42, 146 76, 163 76 C180 76, 178 42, 163 10 Z" fill="#328228" />
+                <path d="M186 10 C171 42, 169 76, 186 76 C203 76, 201 42, 186 10 Z" fill="#4aa32e" />
+                <path d="M209 10 C194 42, 192 76, 209 76 C226 76, 224 42, 209 10 Z" fill="#73bd29" />
+                <path d="M232 10 C217 42, 215 76, 232 76 C249 76, 247 42, 232 10 Z" fill="#9ed422" />
+                <path d="M255 10 C240 42, 238 76, 255 76 C272 76, 270 42, 255 10 Z" fill="#c8e619" />
+
+                <!-- Colina curva -->
+                <path d="M72 102 Q186 72 300 102 Q186 83 72 102 Z" fill="url(#colinaGrad)" />
+
+                <!-- Texto institucional con color automático según el tema -->
+                <text x="190" y="128" text-anchor="middle" fill="currentColor" font-family="'Public Sans', 'Segoe UI', Arial, sans-serif" font-weight="300" font-size="25" letter-spacing="2.5">
+                    <tspan font-size="30">L</tspan>A MONTAÑONA
+                </text>
+                <text x="190" y="146" text-anchor="middle" fill="currentColor" font-family="'Fraunces', Georgia, serif" font-weight="600" font-size="11.5" letter-spacing="5.8" opacity="0.9">
+                    MANCOMUNIDAD
+                </text>
+            </svg>
+        </a>
+        <nav aria-label="Principal"><a href="/#plan">Plan de trabajo</a><a href="/#rio">Somos Río Lempa</a><a href="/#aliados">Alianzas</a><a href="#contacto">Contacto</a><a href="/Identity/Account/Login">Acceso</a><a class="cta" href="/#denuncia" data-open>Hacer una denuncia</a></nav>
+    </div>
+</header>
 
 @Body
 
-<footer id="contacto"><div class="wrap"><div class="cols">
-<div id="denuncia"><h3>Denuncias y retroalimentación</h3><a href="tel:23012376">Teléfono 2301-2376</a><a class="wa" href="https://wa.me/50368615665">Escribir por WhatsApp · 6861-5665</a></div>
-<div><h3>Correos oficiales</h3><a href="mailto:salvaguardia@@mlm.org.sv">salvaguardia@@mlm.org.sv</a><a href="mailto:mancomunidadlamontañona@@outlook.com">mancomunidadlamontañona@@outlook.com</a></div>
-<div><h3>Participa</h3><a href="/participantes/registro">Registro de participantes</a><a href="#">Reportar un incidente ambiental</a><a href="/guardabosques">Acceso de guardabosques</a></div>
-</div><div class="copy">© 2026 Mancomunidad La Montañona · LaMontañona.gob.sv</div></div></footer>
+<footer id="contacto">
+    <div class="wrap">
+        <div class="cols">
+            <div id="denuncia"><h3>Denuncias y retroalimentación</h3><a href="tel:23012376">Teléfono 2301-2376</a><a class="wa" href="https://wa.me/50368615665">Escribir por WhatsApp · 6861-5665</a></div>
+            <div><h3>Correos oficiales</h3><a href="mailto:salvaguardia@@mlm.org.sv">salvaguardia@@mlm.org.sv</a><a href="mailto:mancomunidadlamontañona@@outlook.com">mancomunidadlamontañona@@outlook.com</a></div>
+            <div><h3>Participa</h3><a href="/participantes/registro">Registro de participantes</a><a href="#">Reportar un incidente ambiental</a><a href="/guardabosques">Acceso de guardabosques</a></div>
+        </div><div class="copy">© 2026 Mancomunidad La Montañona · LaMontañona.gob.sv</div>    </div>
+    </footer>
