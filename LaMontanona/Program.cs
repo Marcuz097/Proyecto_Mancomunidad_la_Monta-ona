@@ -1,5 +1,6 @@
 using LaMontanona.Components;
 using LaMontanona.Data;
+using LaMontanona.Endpoints;
 using LaMontanona.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,9 +16,11 @@ builder.Services.AddDefaultIdentity<IdentityUser>(o => o.SignIn.RequireConfirmed
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddRazorComponents().AddInteractiveServerComponents(); // Blazor
-builder.Services.AddRazorPages();                                        // Razor Pages (Identity UI)
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents(o => o.DetailedErrors = builder.Environment.IsDevelopment()); // Blazor
+builder.Services.AddRazorPages();                                                                  // Razor Pages (Identity UI)
 builder.Services.AddCascadingAuthenticationState();
+
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<IParticipanteService, ParticipanteService>();
 builder.Services.AddScoped<IReporteGuardabosqueService, ReporteGuardabosqueService>();
@@ -44,4 +47,5 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 app.MapRazorPages();
+app.MapFotoEndpoints();
 app.Run();

@@ -6,37 +6,31 @@ namespace LaMontanona.Services;
 
 public interface IReporteGuardabosqueService
 {
-    Task<int> CrearAsync(string guardabosqueId, ReporteFormModel m, byte[]? foto, string? nombreFoto);
+    Task<int> CrearAsync(string guardabosqueId, ReporteFormModel m, string? fotoRuta);
     Task<List<ReporteGuardabosque>> MisReportesAsync(string guardabosqueId, int cantidad = 10);
 }
 
 public class ReporteGuardabosqueService(ApplicationDbContext db, IFileStorageService archivos) : IReporteGuardabosqueService
 {
-    public async Task<int> CrearAsync(string guardabosqueId, ReporteFormModel m, byte[]? foto, string? nombreFoto)
+    public async Task<int> CrearAsync(string guardabosqueId, ReporteFormModel m, string? fotoRuta)
     {
-        string? ruta = null;
+        if (!string.IsNullOrWhiteSpace(fotoRuta) && !archivos.EsRutaValida(fotoRuta, "reportes"))
+            throw new InvalidOperationException("La foto no es válida. Súbela de nuevo.");
         try
         {
-            if (foto is { Length: > 0 } && !string.IsNullOrWhiteSpace(nombreFoto))
-            {
-                using var ms = new MemoryStream(foto);
-                ruta = await archivos.GuardarFotoAsync(ms, nombreFoto, foto.Length, "reportes");
-            }
-
             var r = new ReporteGuardabosque
             {
-                GuardabosqueId = guardabosqueId,   // siempre el usuario autenticado, nunca un dato del formulario
+                GuardabosqueId = guardabosqueId,   // siempre el usuario autenticado
                 FechaPatrullaje = m.FechaPatrullaje!.Value.Date,
                 Zona = m.Zona.Trim(),
                 KmRecorridos = m.KmRecorridos!.Value,
                 Novedades = m.Novedades.Trim(),
-                RutaFoto = ruta
+                RutaFoto = string.IsNullOrWhiteSpace(fotoRuta) ? null : fotoRuta
             };
             db.ReportesGuardabosque.Add(r);
             await db.SaveChangesAsync();
             return r.Id;
         }
-        catch { archivos.Eliminar(ruta); throw; }   // no dejar fotos huérfanas si falla el guardado
         finally { db.ChangeTracker.Clear(); }
     }
 
