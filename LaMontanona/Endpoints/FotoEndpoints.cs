@@ -1,6 +1,8 @@
 using LaMontanona.Data;
 using LaMontanona.Services;
+using Microsoft.AspNetCore.Mvc;
 namespace LaMontanona.Endpoints;
+
 
 /// <summary>
 /// Las fotos se suben por HTTP normal (multipart), fuera de la conexión SignalR de Blazor.
