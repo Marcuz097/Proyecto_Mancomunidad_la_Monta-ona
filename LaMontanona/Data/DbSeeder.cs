@@ -19,7 +19,8 @@ public static class DbSeeder
         var cfg = sp.GetRequiredService<IConfiguration>();
 
         foreach (var r in new[] { Roles.Admin, Roles.Guardabosque })
-            if (!await roles.RoleExistsAsync(r)) await roles.CreateAsync(new IdentityRole(r));
+            
+           if (!await roles.RoleExistsAsync(r)) await roles.CreateAsync(new IdentityRole(r));
 
         await CrearUsuarioAsync(users, cfg["SeedAdmin:Email"], cfg["SeedAdmin:Password"], Roles.Admin);
         await CrearUsuarioAsync(users, cfg["SeedGuardabosque:Email"], cfg["SeedGuardabosque:Password"], Roles.Guardabosque);

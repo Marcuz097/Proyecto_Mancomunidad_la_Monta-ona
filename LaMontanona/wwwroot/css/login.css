@@ -1,0 +1,397 @@
+﻿/* ===== Login · Mancomunidad La Montañona ===== */
+.login-body {
+    --verde: #2f7d4f;
+    --rio: #16708c;
+    --noche: #0e2f3a;
+    margin: 0;
+    font: 16px/1.5 'Public Sans', system-ui, sans-serif;
+    color: #fff;
+    background: var(--noche) url('/img/login-bg.jpg') center 38% / cover no-repeat fixed;
+}
+
+    /* velo para que el vidrio y el texto siempre se lean sobre las nubes claras */
+    .login-body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(14,47,58,.10) 0%, rgba(14,47,58,.20) 45%, rgba(8,28,22,.62) 100%);
+        pointer-events: none;
+    }
+
+.login-stage {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    align-content: center;
+    gap: 18px;
+    padding: 28px 18px;
+}
+
+/* ---------- Tarjeta de vidrio ---------- */
+.glass {
+    width: min(420px, 100%);
+    padding: 34px 32px 26px;
+    border-radius: 28px;
+    background: linear-gradient(160deg, rgba(14,47,58,.50), rgba(14,47,58,.34));
+    -webkit-backdrop-filter: blur(22px) saturate(140%);
+    backdrop-filter: blur(22px) saturate(140%);
+    border: 1px solid rgba(255,255,255,.28);
+    box-shadow: 0 30px 70px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.25);
+    animation: entrar .7s cubic-bezier(.2,.7,.2,1) both;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass {
+        background: rgba(14,47,58,.88);
+    }
+}
+
+@keyframes entrar {
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(.985);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.login-logo {
+    display: block;
+    width: 170px;
+    margin: 0 auto 14px;
+    color: #fff;
+}
+
+    .login-logo svg {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
+
+.glass h1 {
+    margin: 0;
+    text-align: center;
+    font: 600 1.7rem/1.15 'Fraunces', Georgia, serif;
+}
+
+.login-sub {
+    margin: 6px 0 22px;
+    text-align: center;
+    font-size: .92rem;
+    color: rgba(255,255,255,.80);
+}
+
+/* ---------- Campos ---------- */
+.field {
+    margin-bottom: 14px;
+}
+
+    .field label {
+        display: block;
+        margin: 0 0 6px 4px;
+        font-size: .82rem;
+        font-weight: 500;
+        color: rgba(255,255,255,.88);
+    }
+
+.control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 12px;
+    height: 52px;
+    border-radius: 16px;
+    background: rgba(255,255,255,.13);
+    border: 1px solid rgba(255,255,255,.28);
+    transition: border-color .2s, background .2s, box-shadow .2s;
+}
+
+    .control:focus-within {
+        background: rgba(255,255,255,.20);
+        border-color: #8fd8a8;
+        box-shadow: 0 0 0 4px rgba(143,216,168,.25);
+    }
+
+    .control svg {
+        flex: none;
+        width: 20px;
+        height: 20px;
+        fill: none;
+        stroke: rgba(255,255,255,.85);
+        stroke-width: 1.7;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .control input {
+        flex: 1;
+        min-width: 0;
+        height: 100%;
+        background: transparent;
+        border: 0;
+        outline: 0;
+        color: #fff;
+        font: inherit;
+    }
+
+        .control input::placeholder {
+            color: rgba(255,255,255,.55);
+        }
+
+        /* evita el fondo del autocompletado del navegador */
+        .control input:-webkit-autofill {
+            -webkit-text-fill-color: #fff;
+            transition: background-color 9999s ease-in-out 0s;
+        }
+
+.toggle {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    cursor: pointer;
+}
+
+    .toggle:hover {
+        background: rgba(255,255,255,.14);
+    }
+
+    .toggle:focus-visible, .login-btn:focus-visible, .login-back:focus-visible, .login-help a:focus-visible {
+        outline: 3px solid #8fd8a8;
+        outline-offset: 2px;
+    }
+
+.field-error {
+    display: block;
+    margin: 4px 0 0 4px;
+    font-size: .8rem;
+    color: #ffd2a1;
+}
+
+/* ---------- Recordarme ---------- */
+.remember {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 2px 0 18px 4px;
+    font-size: .88rem;
+    color: rgba(255,255,255,.88);
+    cursor: pointer;
+}
+
+    .remember input {
+        width: 17px;
+        height: 17px;
+        accent-color: #3fa66a;
+    }
+
+/* ---------- Botón ---------- */
+.login-btn {
+    width: 100%;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 0;
+    border-radius: 16px;
+    cursor: pointer;
+    color: #fff;
+    font: 600 1.02rem 'Public Sans', sans-serif;
+    background: linear-gradient(120deg, #23824f 0%, #1b7a6a 55%, #16708c 100%);
+    box-shadow: 0 12px 26px rgba(22,112,140,.38);
+    transition: transform .2s, box-shadow .2s, filter .2s;
+}
+
+    .login-btn svg {
+        width: 20px;
+        height: 20px;
+        fill: none;
+        stroke: #fff;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        transition: transform .2s;
+    }
+
+    .login-btn:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.08);
+        box-shadow: 0 16px 30px rgba(22,112,140,.5);
+    }
+
+        .login-btn:hover svg {
+            transform: translateX(4px);
+        }
+
+    .login-btn:active {
+        transform: translateY(0);
+    }
+
+    .login-btn[disabled] {
+        opacity: .75;
+        cursor: progress;
+        transform: none;
+    }
+
+/* ---------- Mensajes ---------- */
+/* ---------- Google / Apple ---------- */
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0 14px;
+    font-size: .78rem;
+    color: rgba(255,255,255,.72);
+}
+
+    .divider::before, .divider::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: rgba(255,255,255,.28);
+    }
+
+.social {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+    .social button {
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        border-radius: 16px;
+        cursor: pointer;
+        color: #fff;
+        font: 500 .92rem 'Public Sans', sans-serif;
+        background: rgba(255,255,255,.13);
+        border: 1px solid rgba(255,255,255,.28);
+        transition: background .2s, transform .2s, border-color .2s;
+    }
+
+        .social button svg {
+            width: 20px;
+            height: 20px;
+            flex: none;
+        }
+
+        .social button:hover:not([disabled]) {
+            background: rgba(255,255,255,.24);
+            border-color: rgba(255,255,255,.5);
+            transform: translateY(-2px);
+        }
+
+        .social button:focus-visible {
+            outline: 3px solid #8fd8a8;
+            outline-offset: 2px;
+        }
+
+        .social button[disabled] {
+            opacity: .55;
+            cursor: not-allowed;
+        }
+.login-alert {
+    margin-bottom: 14px;
+}
+
+    .login-alert:empty, .login-alert.validation-summary-valid {
+        display: none;
+    }
+
+    .login-alert ul {
+        margin: 0;
+        padding: 11px 14px;
+        list-style: none;
+        border-radius: 14px;
+        background: rgba(201,121,26,.28);
+        border: 1px solid rgba(255,210,161,.55);
+        font-size: .88rem;
+    }
+
+.login-help {
+    overflow-wrap: anywhere;
+    margin: 18px 0 8px;
+    text-align: center;
+    font-size: .8rem;
+    color: rgba(255,255,255,.75);
+}
+
+    .login-help a {
+        color: #fff;
+        font-weight: 600;
+        text-underline-offset: 3px;
+    }
+
+.login-back {
+    display: block;
+    width: max-content;
+    margin: 0 auto;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: .85rem;
+    color: rgba(255,255,255,.85);
+    text-decoration: none;
+}
+
+    .login-back:hover {
+        color: #fff;
+        text-decoration: underline;
+    }
+
+.login-copy {
+    margin: 0;
+    font-size: .78rem;
+    color: rgba(255,255,255,.75);
+    text-shadow: 0 1px 6px rgba(0,0,0,.5);
+}
+
+/* ---------- Móvil ---------- */
+@media (max-width: 480px) {
+    .glass {
+        padding: 28px 22px 22px;
+        border-radius: 24px;
+    }
+
+    .login-logo {
+        width: 150px;
+    }
+
+    .glass h1 {
+        font-size: 1.5rem;
+    }
+
+    .login-body {
+        background-attachment: scroll;
+        background-position: 30% center;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .glass {
+        animation: none;
+    }
+
+    .login-btn, .login-btn svg, .control {
+        transition: none;
+    }
+}namespace LaMontanona.wwwroot.css
+{
+    public class login
+    {
+    }
+}

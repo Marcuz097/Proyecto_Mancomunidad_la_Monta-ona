@@ -1,6 +1,7 @@
 using LaMontanona.Components;
 using LaMontanona.Data;
 using LaMontanona.Services;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,16 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(o => o.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+// Google Login - va antes del Build
+var auth = builder.Services.AddAuthentication();
+var gId = builder.Configuration["Authentication:Google:ClientId"];
+if (!string.IsNullOrEmpty(gId))
+    auth.AddGoogle(o =>
+    {
+        o.ClientId = gId;
+        o.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+    });
 
 builder.Services.AddRazorComponents().AddInteractiveServerComponents(); // Blazor
 builder.Services.AddRazorPages();                                        // Razor Pages (Identity UI)
