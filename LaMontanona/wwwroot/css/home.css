@@ -612,6 +612,7 @@ header.main {
         grid-template-columns: 1fr
     }
 }
+
 /* --- Versión 3: interactividad --- */
 [hidden] {
     display: none !important
@@ -1093,5 +1094,162 @@ dialog small {
         .rep img {
             width: 100%;
             height: 160px
+        }
+}
+
+/* --- Panel El Observatorio Informa (Diseño Mejorado) --- */
+.portada .wrap {
+    grid-template-columns: 1fr 1.1fr !important;
+    gap: 36px;
+}
+
+.glass#observatorio {
+    width: 100% !important;
+    max-width: 580px !important;
+    justify-self: end;
+    background: rgba(20, 35, 42, 0.72);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+}
+
+.obs-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+    .obs-top h3 {
+        margin: 0 0 4px 0;
+    }
+
+.glass#observatorio .obs-sub {
+    font-size: 13px;
+    color: #cbd5e1;
+    margin: 0;
+    white-space: nowrap;
+}
+
+.badge-vivo {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(163, 230, 53, 0.15);
+    border: 1px solid rgba(163, 230, 53, 0.4);
+    color: #bef264;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 99px;
+    white-space: nowrap;
+}
+
+    .badge-vivo .dot {
+        width: 7px;
+        height: 7px;
+        background: #a3e635;
+        border-radius: 50%;
+        box-shadow: 0 0 8px #a3e635;
+    }
+
+.o-dia {
+    transition: all 0.25s ease;
+    text-align: left;
+}
+
+    .o-dia:hover {
+        background: rgba(255, 255, 255, 0.12);
+        transform: translateY(-2px);
+    }
+
+.o-dia-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.clima-ico {
+    font-size: 20px;
+}
+
+.grafica-titulo {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11.5px;
+    color: #94a3b8;
+    margin-top: 18px;
+    margin-bottom: 6px;
+    padding: 0 4px;
+}
+
+.o-horas {
+    display: flex !important;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 115px;
+    gap: 10px;
+    margin: 0 0 18px 0;
+}
+
+.o-h {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    cursor: pointer;
+}
+
+.val-top {
+    font-size: 11px;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 5px;
+}
+
+.barra-track {
+    width: 100%;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+}
+
+.o-h .b {
+    width: 100%;
+    min-height: 10px;
+    background: linear-gradient(180deg, #6ee7b7 0%, #10b981 100%);
+    border-radius: 6px;
+    transition: height 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+    .o-h .b.lluvia-alta {
+        background: linear-gradient(180deg, #7dd3fc 0%, #0284c7 100%);
+    }
+
+.hora-lbl {
+    font-size: 11.5px;
+    color: #94a3b8;
+    margin-top: 6px;
+}
+
+@media (max-width: 900px) {
+    .portada .wrap {
+        grid-template-columns: 1fr !important;
+    }
+
+    .glass#observatorio {
+        max-width: 100% !important;
+    }
+
+        .glass#observatorio .obs-sub {
+            white-space: normal;
         }
 }

@@ -1,4 +1,8 @@
 @page "/"
+@rendermode InteractiveServer
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@inject IHttpClientFactory HttpClientFactory
 
 <PageTitle>Mancomunidad La Montañona · Hábitat para comunidad</PageTitle>
 
@@ -13,15 +17,57 @@
                 <a class="boton vid" href="somos-rio-lempa">Ver Somos Río Lempa</a>
             </div>
         </div>
+
         <div class="glass" id="observatorio" role="region" aria-labelledby="obs-t">
-            <h3 id="obs-t">El Observatorio Informa</h3>
-            <div class="obs-sub">Pronóstico oficial 48 horas · Zona La Montañona</div>
-            <div class="o-dias" role="tablist">
-                <button type="button" class="o-dia on" role="tab"><b>Hoy</b><span class="t">17–27 °C</span><small>Lluvia hasta 70 %</small></button>
-                <button type="button" class="o-dia" role="tab"><b>Mañana</b><span class="t">18–29 °C</span><small>Lluvia hasta 35 %</small></button>
+            <div class="obs-top">
+                <div>
+                    <h3 id="obs-t">El Observatorio Informa</h3>
+                    <div class="obs-sub">Pronóstico 48 horas · La Montañona, Chalatenango (1,450 m)</div>
+                </div>
+                <span class="badge-vivo"><span class="dot"></span> En vivo</span>
             </div>
-            <div class="o-horas" id="horas" aria-label="Probabilidad de lluvia cada 3 horas"></div>
-            <div class="alerta-obs" id="al"></div>
+
+            <div class="o-dias" role="tablist">
+                <button type="button" class="o-dia @(diaSeleccionado == 0 ? "on" : "")" role="tab" @onclick="() => SeleccionarDia(0)">
+                    <div class="o-dia-head">
+                        <b>Hoy</b>
+                        <span class="clima-ico">@IconoHoy</span>
+                    </div>
+                    <span class="t">@TempHoy</span>
+                    <small>💧 @LluviaHoy</small>
+                </button>
+
+                <button type="button" class="o-dia @(diaSeleccionado == 1 ? "on" : "")" role="tab" @onclick="() => SeleccionarDia(1)">
+                    <div class="o-dia-head">
+                        <b>Mañana</b>
+                        <span class="clima-ico">@IconoManana</span>
+                    </div>
+                    <span class="t">@TempManana</span>
+                    <small>💧 @LluviaManana</small>
+                </button>
+            </div>
+
+            <div class="grafica-titulo">
+                <span>Tendencia cada 3 horas</span>
+                <span>Temperatura / Lluvia</span>
+            </div>
+
+            <div class="o-horas" id="horas" aria-label="Pronóstico cada 3 horas">
+                @foreach (var h in HorasActuales)
+                {
+                    <div class="o-h" title="@h.Temp°C · Probabilidad de lluvia: @h.ProbLluvia%">
+                        <span class="val-top">@h.Temp°</span>
+                        <div class="barra-track">
+                            <div class="b @(h.ProbLluvia >= 50 ? "lluvia-alta" : "")" style="height: @h.AlturaPorcentaje%"></div>
+                        </div>
+                        <span class="hora-lbl">@h.Etiqueta</span>
+                    </div>
+                }
+            </div>
+
+            <div class="alerta-obs" id="al">
+                @((MarkupString)AlertaActual)
+            </div>
         </div>
     </div>
 </section>
@@ -151,3 +197,305 @@
         </div>
     </div>
 </section>
+
+<style>
+    .portada .wrap {
+        grid-template-columns: 1fr 1.1fr !important;
+        gap: 36px;
+    }
+
+    .glass#observatorio {
+        width: 100% !important;
+        max-width: 580px !important;
+        justify-self: end;
+        background: rgba(20, 35, 42, 0.72);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+    }
+
+    .obs-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+        .obs-top h3 {
+            margin: 0 0 4px 0;
+        }
+
+    .glass#observatorio .obs-sub {
+        font-size: 13px;
+        color: #cbd5e1;
+        margin: 0;
+        white-space: nowrap;
+    }
+
+    .badge-vivo {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(163, 230, 53, 0.15);
+        border: 1px solid rgba(163, 230, 53, 0.4);
+        color: #bef264;
+        font-size: 11.5px;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 99px;
+        white-space: nowrap;
+    }
+
+        .badge-vivo .dot {
+            width: 7px;
+            height: 7px;
+            background: #a3e635;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #a3e635;
+        }
+
+    .o-dia {
+        transition: all 0.25s ease;
+        text-align: left;
+    }
+
+        .o-dia:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateY(-2px);
+        }
+
+    .o-dia-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    .clima-ico {
+        font-size: 20px;
+    }
+
+    .grafica-titulo {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11.5px;
+        color: #94a3b8;
+        margin-top: 18px;
+        margin-bottom: 6px;
+        padding: 0 4px;
+    }
+
+    .o-horas {
+        display: flex !important;
+        align-items: flex-end;
+        justify-content: space-between;
+        height: 115px;
+        gap: 10px;
+        margin: 0 0 18px 0;
+    }
+
+    .o-h {
+        flex: 1;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .val-top {
+        font-size: 11px;
+        font-weight: 600;
+        color: #e2e8f0;
+        margin-bottom: 5px;
+    }
+
+    .barra-track {
+        width: 100%;
+        height: 70px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        display: flex;
+        align-items: flex-end;
+        overflow: hidden;
+    }
+
+    .o-h .b {
+        width: 100%;
+        min-height: 10px;
+        background: linear-gradient(180deg, #6ee7b7 0%, #10b981 100%);
+        border-radius: 6px;
+        transition: height 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+        .o-h .b.lluvia-alta {
+            background: linear-gradient(180deg, #7dd3fc 0%, #0284c7 100%);
+        }
+
+    .hora-lbl {
+        font-size: 11.5px;
+        color: #94a3b8;
+        margin-top: 6px;
+    }
+
+    @@media (max-width: 900px) {
+        .portada .wrap {
+            grid-template-columns: 1fr !important;
+        }
+
+        .glass#observatorio {
+            max-width: 100% !important;
+        }
+
+            .glass#observatorio .obs-sub {
+                white-space: normal;
+            }
+    }
+</style>
+
+@code {
+    private int diaSeleccionado = 0;
+
+    private string TempHoy = "17–27 °C";
+    private string LluviaHoy = "Cargando...";
+    private string IconoHoy = "⛅";
+
+    private string TempManana = "18–29 °C";
+    private string LluviaManana = "Cargando...";
+    private string IconoManana = "🌦️";
+
+    private string AlertaHoy = "<strong>Precaución:</strong> analizando condiciones meteorológicas de montaña...";
+    private string AlertaManana = "<strong>Pronóstico:</strong> cargando datos para mañana...";
+    private string AlertaActual => diaSeleccionado == 0 ? AlertaHoy : AlertaManana;
+
+    private List<HoraItem> HorasHoy = new();
+    private List<HoraItem> HorasManana = new();
+    private List<HoraItem> HorasActuales => diaSeleccionado == 0 ? HorasHoy : HorasManana;
+
+    protected override async Task OnInitializedAsync()
+    {
+        int[] horasObj = { 0, 3, 6, 9, 12, 15, 18, 21 };
+        foreach (var h in horasObj)
+        {
+            HorasHoy.Add(new HoraItem { Etiqueta = $"{h}h", Temp = 20, AlturaPorcentaje = 20 });
+            HorasManana.Add(new HoraItem { Etiqueta = $"{h}h", Temp = 20, AlturaPorcentaje = 20 });
+        }
+
+        await CargarClimaLaMontanonaAsync();
+    }
+
+    private void SeleccionarDia(int dia)
+    {
+        diaSeleccionado = dia;
+    }
+
+    private async Task CargarClimaLaMontanonaAsync()
+    {
+        string url = "https://api.open-meteo.com/v1/forecast?latitude=14.1292&longitude=-88.9189&elevation=1450&hourly=temperature_2m,precipitation_probability,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=America%2FEl_Salvador&forecast_days=2";
+
+        try
+        {
+            using var client = HttpClientFactory.CreateClient();
+            var json = await client.GetStringAsync(url);
+            var data = JsonSerializer.Deserialize<OpenMeteoResponse>(json);
+
+            if (data?.Daily != null && data?.Hourly != null)
+            {
+                int minHoy = (int)Math.Round(data.Daily.TempMin[0]);
+                int maxHoy = (int)Math.Round(data.Daily.TempMax[0]);
+                int probHoy = data.Daily.ProbLluviaMax[0] ?? 0;
+                TempHoy = $"{minHoy}–{maxHoy} °C";
+                LluviaHoy = $"Lluvia hasta {probHoy} %";
+                IconoHoy = probHoy >= 60 ? "⛈️" : (probHoy >= 30 ? "🌦️" : "⛅");
+
+                int minManana = (int)Math.Round(data.Daily.TempMin[1]);
+                int maxManana = (int)Math.Round(data.Daily.TempMax[1]);
+                int probManana = data.Daily.ProbLluviaMax[1] ?? 0;
+                TempManana = $"{minManana}–{maxManana} °C";
+                LluviaManana = $"Lluvia hasta {probManana} %";
+                IconoManana = probManana >= 60 ? "⛈️" : (probManana >= 30 ? "🌦️" : "⛅");
+
+                HorasHoy = ConstruirFranjasHorarias(data.Hourly, 0, out double vientoMaxHoy);
+                HorasManana = ConstruirFranjasHorarias(data.Hourly, 24, out double vientoMaxManana);
+
+                AlertaHoy = GenerarMensajeAlerta(probHoy, vientoMaxHoy, minHoy);
+                AlertaManana = GenerarMensajeAlerta(probManana, vientoMaxManana, minManana);
+            }
+        }
+        catch
+        {
+            AlertaHoy = "<strong>Aviso:</strong> sin conexión satelital momentánea. Mostrando valores de referencia.";
+            AlertaManana = AlertaHoy;
+        }
+    }
+
+    private List<HoraItem> ConstruirFranjasHorarias(HourlyData hourly, int offsetHoras, out double maxViento)
+    {
+        int[] horasObj = { 0, 3, 6, 9, 12, 15, 18, 21 };
+        var lista = new List<HoraItem>();
+        maxViento = 0;
+
+        foreach (var h in horasObj)
+        {
+            int idx = offsetHoras + h;
+            int temp = (int)Math.Round(hourly.Temp[idx]);
+            int probLluvia = hourly.ProbLluvia[idx] ?? 0;
+            double viento = hourly.Viento[idx] ?? 0;
+            if (viento > maxViento) maxViento = viento;
+
+            int altura = Math.Max(18, Math.Min(95, (temp - 13) * 6));
+
+            lista.Add(new HoraItem
+            {
+                Etiqueta = $"{h}h",
+                Temp = temp,
+                ProbLluvia = probLluvia,
+                AlturaPorcentaje = altura
+            });
+        }
+        return lista;
+    }
+
+    private string GenerarMensajeAlerta(int probLluvia, double maxViento, int tempMin)
+    {
+        if (probLluvia >= 50)
+            return $"<strong>Precaución:</strong> probabilidad alta de tormentas o lluvias ({probLluvia}%). Evite quemas y senderos cercanos a quebradas.";
+        if (maxViento >= 30)
+            return $"<strong>Precaución:</strong> ráfagas de viento de hasta {Math.Round(maxViento)} km/h en zonas altas. Evite quemas agrícolas.";
+        if (tempMin <= 15)
+            return $"<strong>Aviso de montaña:</strong> descenso térmico nocturno hasta {tempMin}°C con posible neblina en caminos rurales.";
+
+        return "<strong>Condiciones estables:</strong> clima fresco de montaña. Mantenga precaución en senderos y evite quemas no controladas.";
+    }
+
+    private class HoraItem
+    {
+        public string Etiqueta { get; set; } = "";
+        public int Temp { get; set; }
+        public int ProbLluvia { get; set; }
+        public int AlturaPorcentaje { get; set; }
+    }
+
+    private class OpenMeteoResponse
+    {
+        [JsonPropertyName("daily")] public DailyData? Daily { get; set; }
+        [JsonPropertyName("hourly")] public HourlyData? Hourly { get; set; }
+    }
+
+    private class DailyData
+    {
+        [JsonPropertyName("temperature_2m_max")] public List<double> TempMax { get; set; } = new();
+        [JsonPropertyName("temperature_2m_min")] public List<double> TempMin { get; set; } = new();
+        [JsonPropertyName("precipitation_probability_max")] public List<int?> ProbLluviaMax { get; set; } = new();
+    }
+
+    private class HourlyData
+    {
+        [JsonPropertyName("temperature_2m")] public List<double> Temp { get; set; } = new();
+        [JsonPropertyName("precipitation_probability")] public List<int?> ProbLluvia { get; set; } = new();
+        [JsonPropertyName("wind_speed_10m")] public List<double?> Viento { get; set; } = new();
+    }
+}
