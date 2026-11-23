@@ -144,7 +144,7 @@
             color: rgba(255,255,255,.55);
         }
 
-        /* evita el fondo del autocompletado del navegador */
+        /* evita el fondo amarillo/blanco del autocompletado del navegador */
         .control input:-webkit-autofill {
             -webkit-text-fill-color: #fff;
             transition: background-color 9999s ease-in-out 0s;
@@ -245,7 +245,7 @@
         transform: none;
     }
 
-/* ---------- Mensajes ---------- */
+
 /* ---------- Google / Apple ---------- */
 .divider {
     display: flex;
@@ -305,11 +305,14 @@
             opacity: .55;
             cursor: not-allowed;
         }
+
+/* ---------- Mensajes ---------- */
 .login-alert {
     margin-bottom: 14px;
 }
 
-    .login-alert:empty, .login-alert.validation-summary-valid {
+    .login-alert:empty,
+    .login-alert.validation-summary-valid {
         display: none;
     }
 
@@ -388,10 +391,5 @@
 
     .login-btn, .login-btn svg, .control {
         transition: none;
-    }
-}namespace LaMontanona.wwwroot.css
-{
-    public class login
-    {
     }
 }

@@ -1,0 +1,58 @@
+@page "/plan-de-trabajo"
+
+<PageTitle>Plan de trabajo · Mancomunidad La Montañona</PageTitle>
+
+<PageBanner Migaja="Plan de trabajo"
+            Titulo="Plan de trabajo: cinco programas"
+            Subtitulo="Cada programa une conservación, producción y gobernanza para que el territorio y las familias mejoren juntos."
+            Imagen="/img/login-bg.jpg" Posicion="center 55%" />
+
+<section class="s alt">
+    <div class="wrap tabs">
+        <div class="tl" role="tablist" aria-label="Programas">
+            @for (var i = 0; i < Contenido.Programas.Length; i++)
+            {
+                var p = Contenido.Programas[i];
+                <button type="button" role="tab" data-tab="@i" class="@(i == 0 ? "on" : null)" aria-selected="@(i == 0 ? "true" : "false")">
+                    <span class="nn">@(i + 1)</span>@p.Titulo
+                </button>
+            }
+        </div>
+        <div>
+            @for (var i = 0; i < Contenido.Programas.Length; i++)
+            {
+                var p = Contenido.Programas[i];
+                <article class="det" data-panel="@i" hidden="@(i != 0)">
+                    <div class="im"><img src="@p.Imagen" alt="" style="object-position:@p.Posicion" /></div>
+                    <div class="b">
+                        <span class="eyebrow">Programa @(i + 1)</span>
+                        <h2>@p.Titulo</h2>
+                        <p>@p.Detalle</p>
+                        <div class="lin">
+                            @foreach (var l in p.Lineas)
+                            {
+                                <div><svg class="i" viewBox="0 0 24 24"><path d="M5 12l5 5 9-10" /></svg><span>@l</span></div>
+                            }
+                        </div>
+                        <div class="btns">
+                            <a class="boton prim" href="participantes/registro">Participar en este programa <svg class="i" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a>
+                        </div>
+                        <span class="note">Líneas de acción de ejemplo: se actualizarán con la información oficial de la Mancomunidad.</span>
+                    </div>
+                </article>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="band">
+    <div class="wrap">
+        <div>
+            <h2>¿Quieres ser parte de un programa?</h2>
+            <p>Inscríbete en el registro único de participantes con tu DUI.</p>
+        </div>
+        <div class="ct">
+            <a class="boton ambar" href="participantes/registro">Registro de participantes</a>
+        </div>
+    </div>
+</section>

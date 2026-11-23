@@ -1,0 +1,76 @@
+@page "/somos-rio-lempa"
+
+<PageTitle>Somos Río Lempa · Mancomunidad La Montañona</PageTitle>
+
+<PageBanner Migaja="Somos Río Lempa"
+            Titulo="Somos Río Lempa"
+            Subtitulo="El agua que da vida a El Salvador: reforestación, producción sostenible y agua para las comunidades de la cuenca."
+            Imagen="/img/SRLAguayGobernanza.jpg" Posicion="center 18%" />
+
+<section class="s">
+    <div class="wrap">
+        <div class="kpis">
+            <div class="kp rv"><b>49 %</b><span>del territorio de El Salvador está dentro de la cuenca del Río Lempa</span></div>
+            <div class="kp rv d1"><b>68 %</b><span>de los recursos hídricos del país los suministra el Río Lempa</span></div>
+            <div class="kp rv d2"><b>50+</b><span>operadoras de agua (OSAS) en capacitación en Guajoyo y El Palmo</span></div>
+        </div>
+
+        <div class="h2w rv">
+            <span class="eyebrow">Programa audiovisual</span>
+            <h2>Mira el programa</h2>
+        </div>
+
+        @* Cuando tengas los videos (.mp4) en wwwroot/videos/rio-lempa/, aquí se sustituye cada imagen por un <video>. *@
+        <div class="rl rv">
+            <div>
+                <div class="stage" id="stage">
+                    <span class="live">● En transmisión</span>
+                    @for (var k = 0; k < slides.Length; k++)
+                    {
+                        var s = slides[k];
+                        <img class="slide @(k == 0 ? "active" : "")" src="@s.Img" alt="@s.T" data-t="@s.T" data-c="@s.C" data-zoom="@s.Img" data-titulo="@s.T" />
+                    }
+                    <div class="leyenda" id="cap"></div>
+                </div>
+                <div class="pbar">
+                    <button type="button" id="pp" aria-label="Pausar">❚❚</button>
+                    <span id="vt">Somos Río Lempa</span>
+                    <div class="tr"><span id="prog"></span></div>
+                </div>
+            </div>
+            <div class="plist" aria-label="Lista de reproducción">
+                @foreach (var s in slides)
+                {
+                    <button type="button"><img src="@s.Img" alt="" /><span><b>@s.T</b><small>@s.C</small></span></button>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="s alt">
+    <div class="wrap">
+        <div class="h2w rv">
+            <span class="eyebrow">Material del programa</span>
+            <h2>Galería</h2>
+            <p>Haz clic en cualquier imagen para verla en tamaño completo.</p>
+        </div>
+        <div class="gal">
+            <figure class="rv" data-zoom="/img/SomosRioLempa.jpg" data-titulo="El Río Lempa"><img src="/img/SomosRioLempa.jpg" alt="El Río Lempa" /><figcaption>El Río Lempa</figcaption></figure>
+            <figure class="rv d1" data-zoom="/img/SRLAguayGobernanza.jpg" data-titulo="Agua y gobernanza"><img src="/img/SRLAguayGobernanza.jpg" alt="Agua y gobernanza" /><figcaption>Agua y gobernanza</figcaption></figure>
+            <figure class="rv d2" data-zoom="/img/agua-el-salvador.jpg" data-titulo="Aquí está el agua que da vida a El Salvador"><img src="/img/agua-el-salvador.jpg" alt="Aquí está el agua que da vida a El Salvador" /><figcaption>Aquí está el agua que da vida a El Salvador</figcaption></figure>
+        </div>
+    </div>
+</section>
+
+@code {
+    private record Slide(string Img, string T, string C);
+
+    private static readonly Slide[] slides =
+    {
+        new("/img/SomosRioLempa.jpg", "Somos Río Lempa", "Protegemos las fuentes de la cuenca del Lempa."),
+        new("/img/gigante-natural.jpg", "Un Gigante Natural", "Reserva ecológica a 1,700 metros de altura en Chalatenango."),
+        new("/img/fuente-vida.jpg", "Fuente de Vida", "Zona de recarga acuífera que alimenta ríos y manantiales."),
+        new("/img/agua-el-salvador.jpg", "Agua para El Salvador", "Aquí está el agua que da vida a El Salvador."),
+    };
+}

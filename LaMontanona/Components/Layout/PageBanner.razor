@@ -1,0 +1,15 @@
+<section class="ban" style="background-image:url('@Imagen');background-position:@Posicion">
+    <div class="wrap">
+        <div class="bc"><a href="">Inicio</a> › <b>@Migaja</b></div>
+        <h1>@Titulo</h1>
+        <p>@Subtitulo</p>
+    </div>
+</section>
+
+@code {
+    [Parameter] public string Imagen { get; set; } = "/img/login-bg.jpg";
+    [Parameter] public string Posicion { get; set; } = "center";
+    [Parameter] public string Migaja { get; set; } = "";
+    [Parameter] public string Titulo { get; set; } = "";
+    [Parameter] public string Subtitulo { get; set; } = "";
+}

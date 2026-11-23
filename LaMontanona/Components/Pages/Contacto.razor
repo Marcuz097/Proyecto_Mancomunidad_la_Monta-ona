@@ -1,0 +1,67 @@
+﻿@page "/contacto"
+
+<PageTitle>Contacto y denuncias · Mancomunidad La Montañona</PageTitle>
+
+<PageBanner Migaja="Contacto y denuncias"
+            Titulo="Contacto y denuncias"
+            Subtitulo="Estamos para escucharte. Reporta un incidente ambiental o escríbenos por cualquiera de nuestros canales."
+            Imagen="/img/login-bg.jpg" Posicion="center 50%" />
+
+<section class="s alt" id="contacto">
+    <div class="wrap con">
+        <div class="ch">
+            <a class="cc rv" href="tel:23012376">
+                <div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z" /></svg></div>
+                <div><b>Teléfono 2301-2376</b><small>Denuncias y retroalimentación</small></div>
+            </a>
+            <a class="cc wa rv d1" href="https://wa.me/50368615665">
+                <div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.7 7L3 21l2-5.5A8 8 0 1 1 21 12z" /></svg></div>
+                <div><b>WhatsApp 6861-5665</b><small>Escribir por WhatsApp</small></div>
+            </a>
+            <a class="cc rv d2" href="mailto:salvaguardia@@mlm.org.sv">
+                <div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Zm0 1 8 6 8-6" /></svg></div>
+                <div><b>salvaguardia@@mlm.org.sv</b><small>mancomunidadlamontañona@@outlook.com</small></div>
+            </a>
+            <div class="map rv d3">
+                <div>
+                    <svg class="i" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11zM12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" /></svg><br />
+                    Mapa de ubicación de la oficina<br /><small>Dirección y horario por confirmar</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="denf rv" id="denuncia">
+            <form id="fi">
+                <h2>Hacer una denuncia</h2>
+                <p>Tu reporte llega al equipo de salvaguardia. Puedes adjuntar una fotografía y tu ubicación.</p>
+                <label class="fl">
+                    <span>Tipo de incidente</span>
+                    <select required>
+                        <option value="">Elige una opción</option>
+                        <option>Incendio o quema</option>
+                        <option>Tala ilegal</option>
+                        <option>Caza o tráfico de fauna</option>
+                        <option>Contaminación de agua</option>
+                        <option>Otro</option>
+                    </select>
+                </label>
+                <label class="fl">
+                    <span>Ubicación</span>
+                    <span class="row"><input id="ubi" required placeholder="Comunidad, cantón o coordenadas" /><button type="button" id="gps">Usar mi ubicación</button></span>
+                    <small id="gm"></small>
+                </label>
+                <label class="fl"><span>¿Qué está pasando?</span><textarea required placeholder="Cuéntanos qué viste…"></textarea></label>
+                <label class="fl"><span>Fotografía (opcional)</span><input type="file" id="foto" accept="image/*" /></label>
+                <img id="vprev" alt="Vista previa de la foto" hidden />
+                <label class="chk"><input type="checkbox" /> Prefiero enviar mi denuncia de forma anónima</label>
+                <button type="submit" class="boton ambar full">Enviar denuncia</button>
+            </form>
+            <div id="okd" class="okmsg" hidden>
+                <h3>Reporte recibido</h3>
+                <p>Gracias. El equipo de salvaguardia lo revisará.</p>
+                <p class="suave"><small>Esta es una demostración: aún no se guarda en la base de datos.</small></p>
+                <a class="boton cont" href="">Volver al inicio</a>
+            </div>
+        </div>
+    </div>
+</section>

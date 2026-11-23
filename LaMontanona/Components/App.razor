@@ -4,15 +4,23 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <base href="/" />
+    <script>
+        try {
+            var d = document.documentElement;
+            d.classList.add('js');
+            if (localStorage.getItem('tema') === 'dark') d.dataset.theme = 'dark';
+            var f = +localStorage.getItem('fs'); if (f) d.dataset.fs = f;
+        } catch (e) { }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@@600&amp;family=Public+Sans:wght@@400;500;600&amp;display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@@600&amp;family=Public+Sans:wght@@400;500;600;700&amp;display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="css/home.css" />
+    <link rel="stylesheet" href="css/site.css" />
     <HeadOutlet />
 </head>
 <body>
     <Routes />
-    <script src="js/fotos.js"></script>
     <script src="_framework/blazor.web.js"></script>
-    <script src="js/home.js"></script>
+    <script src="js/site.js"></script>
 </body>
 </html>

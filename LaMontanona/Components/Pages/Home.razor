@@ -2,230 +2,152 @@
 
 <PageTitle>Mancomunidad La Montañona · Hábitat para comunidad</PageTitle>
 
-<main>
-    <section class="hero">
-        <div class="wrap">
+<section class="portada">
+    <div class="wrap">
+        <div>
+            <span class="eyebrow">Mancomunidad La Montañona</span>
             <h1>Hábitat para comunidad</h1>
             <p class="lead">Protegemos el bosque, el agua y los medios de vida de las familias de la Mancomunidad con trabajo técnico, ambiental y comunitario.</p>
-            <div class="grid">
-                <div class="player" id="rio" role="region" aria-label="Programa Somos Río Lempa">
-                    <div class="screen" style="position: relative; overflow: hidden; background: #0c261c;">
-                        <span class="badge" style="z-index: 3;"><i></i>En transmisión</span>
-                        <div class="cap" id="cap" style="z-index: 3;"></div>
-
-                        <!-- Carrusel de imágenes encima -->
-                        <div class="hero-slider" style="z-index: 2;">
-                            <img src="img/SomosRioLempa.jpg" alt="Somos Río Lempa" onclick="verImagen(this.src, this.alt)" />
-                            <img src="img/gigante-natural.jpg" alt="Un Gigante Natural" onclick="verImagen(this.src, this.alt)" />
-                            <img src="img/fuente-vida.jpg" alt="Fuente de Vida" onclick="verImagen(this.src, this.alt)" />
-                            <img src="img/agua-el-salvador.jpg" alt="Aquí está el agua que da vida a El Salvador" onclick="verImagen(this.src, this.alt)" />
-                        </div>
-                        <span class="zoom-hint" style="z-index: 3;">Clic para ampliar</span>
-                    </div>
-                    <div class="bar"><button class="pp" id="pp" type="button" aria-label="Pausar">❚❚</button><span id="vt">Somos Río Lempa</span><div class="track"><span id="prog"></span></div></div>
-                    <div class="list"><button type="button">Reforestación en la cuenca</button><button type="button">Sistemas agropastoriles</button><button type="button">Agua para las comunidades</button></div>
-                </div>
-                <aside class="obs" aria-labelledby="obs-t">
-                    <h2 id="obs-t">El Observatorio Informa</h2><p class="sub">Pronóstico oficial 48 horas · Zona La Montañona</p>
-                    <div class="dias" role="tablist"><button type="button" class="dia" role="tab"><b>Hoy</b><span class="t">17–27 °C</span><small>Lluvia hasta 70 %</small></button><button type="button" class="dia" role="tab"><b>Mañana</b><span class="t">18–29 °C</span><small>Lluvia hasta 35 %</small></button></div><div class="horas" id="horas" aria-label="Probabilidad de lluvia cada 3 horas"></div>
-                    <div class="alerta" id="al"></div>
-                </aside>
+            <div class="bt">
+                <a class="boton prim" href="plan-de-trabajo">Conoce el plan de trabajo <svg class="i" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a>
+                <a class="boton vid" href="somos-rio-lempa">Ver Somos Río Lempa</a>
             </div>
         </div>
-    </section>
-    <section class="quick" aria-label="Accesos rápidos">
-        <div class="wrap">
-            <a class="urgente" href="#denuncia" data-open><svg viewBox="0 0 24 24"><path d="M12 3 2 20h20zM12 10v4M12 17h.01" /></svg><span><b>Reportar un incidente</b><small>Con fotos y ubicación</small></span></a>
-            <a href="/participantes/registro"><svg viewBox="0 0 24 24"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2M9.5 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM17 10l2 2 3-3" /></svg><span><b>Registro de participantes</b><small>Inscríbete con tu DUI</small></span></a>
-            <a href="/guardabosques"><svg viewBox="0 0 24 24"><path d="M12 21V8M12 8c-4 0-6-3-6-6 4 0 6 2 6 6zm0 4c4 0 6-3 6-6-4 0-6 2-6 6z" /></svg><span><b>Portal de guardabosques</b><small>Reportes de patrullaje</small></span></a>
-            <a href="#rio"><svg viewBox="0 0 24 24"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z" /></svg><span><b>Pronóstico 48 horas</b><small>El Observatorio Informa</small></span></a>
-        </div>
-    </section>
-    <section class="blk" id="plan">
-        <div class="wrap">
-            <h2>Plan de trabajo: cinco programas</h2><p class="intro">Cada programa une conservación, producción y gobernanza para que el territorio y las familias mejoren juntos.</p>
-            <div class="ejes">
-                <article class="eje"><svg viewBox="0 0 24 24"><path d="M12 21V8M12 8c-4 0-6-3-6-6 4 0 6 2 6 6zm0 4c4 0 6-3 6-6-4 0-6 2-6 6z" /></svg><h3>Bosque y biodiversidad</h3><p>Protección y conservación de ecosistemas y especies.</p></article>
-                <article class="eje"><svg viewBox="0 0 24 24"><path d="M3 20h18M6 20v-6l6-8 6 8v6" /></svg><h3>Restauración y producción sostenible</h3><p>Sistemas agropastoriles que generan ingresos para las familias y recuperan suelos degradados.</p></article>
-                <article class="eje"><svg viewBox="0 0 24 24"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z" /></svg><h3>Gobernanza hídrica</h3><p>Gestión del agua con las comunidades.</p></article>
-                <article class="eje"><svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6" /></svg><h3>Fortalecimiento institucional</h3><p>Capacidades técnicas y administrativas.</p></article>
-                <article class="eje"><svg viewBox="0 0 24 24"><path d="M3 19 10 6l4 7 3-4 4 10z" /></svg><h3>Desarrollo local y turismo</h3><p>Emprendimientos que cuidan el territorio.</p></article>
+        <div class="glass" id="observatorio" role="region" aria-labelledby="obs-t">
+            <h3 id="obs-t">El Observatorio Informa</h3>
+            <div class="obs-sub">Pronóstico oficial 48 horas · Zona La Montañona</div>
+            <div class="o-dias" role="tablist">
+                <button type="button" class="o-dia on" role="tab"><b>Hoy</b><span class="t">17–27 °C</span><small>Lluvia hasta 70 %</small></button>
+                <button type="button" class="o-dia" role="tab"><b>Mañana</b><span class="t">18–29 °C</span><small>Lluvia hasta 35 %</small></button>
             </div>
+            <div class="o-horas" id="horas" aria-label="Probabilidad de lluvia cada 3 horas"></div>
+            <div class="alerta-obs" id="al"></div>
         </div>
-    </section>
-    <section class="blk" id="noticias">
-        <div class="wrap">
-            <h2>Noticias y comunicados</h2><p class="intro">Haz clic en cualquier imagen para verla en tamaño completo.</p>
-            <div class="news">
-                <article class="nota">
-                    <div class="img" onclick="verImagen('img/turismo-sendero.jpg', 'Brigadas comunitarias refuerzan la prevención de incendios')">
-                        <img src="img/turismo-sendero.jpg" alt="Senderos y bosque en La Montañona" />
-                        <span class="zoom-hint">Ampliar</span>
-                    </div>
-                    <div class="t"><h3>Brigadas comunitarias refuerzan la prevención de incendios</h3><p>Familias y guardabosques coordinan rondas en las zonas más expuestas.</p></div>
-                </article>
-                <article class="nota">
-                    <div class="img" onclick="verImagen('img/montanona-destino.jpg', 'La Montañona destino natural')">
-                        <img src="img/montanona-destino.jpg" alt="La Montañona destino natural" />
-                        <span class="zoom-hint">Ampliar</span>
-                    </div>
-                    <div class="t"><h3>Nuevos sistemas agropastoriles en marcha</h3><p>Más hogares mejoran sus ingresos sin talar bosque.</p></div>
-                </article>
-                <article class="nota">
-                    <div class="img" onclick="verImagen('img/SRLAguayGobernanza.jpg', 'Agua y Gobernanza - Río Lempa')">
-                        <img src="img/SRLAguayGobernanza.jpg" alt="Agua y Gobernanza" />
-                        <span class="zoom-hint">Ampliar</span>
-                    </div>
-                    <div class="t"><h3>Mesa del agua con las comunidades</h3><p>Acuerdos para cuidar las fuentes de la cuenca.</p></div>
-                </article>
-            </div>
-        </div>
-    </section>
-    <section class="blk aliados" id="aliados"><div class="wrap"><h2>Convenios y alianzas</h2><p class="intro">Trabajamos con organizaciones que comparten el compromiso con el territorio.</p><div class="chips"><div>ACACYPAC</div><div>Gobiernos locales</div><div>Cooperación técnica</div></div></div></section>
-</main>
-
-<style>
-    .hero-slider {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-    }
-
-        .hero-slider img {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            cursor: zoom-in;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.6s ease;
-        }
-
-            .hero-slider img.active {
-                opacity: 1;
-                pointer-events: auto;
-            }
-
-    /* Legibilidad del subtítulo inferior en el carrusel */
-    #rio .cap {
-        background: linear-gradient(to top, rgba(8, 24, 18, 0.94) 0%, rgba(8, 24, 18, 0.72) 70%, transparent 100%) !important;
-        backdrop-filter: blur(4px);
-        color: #ffffff !important;
-        font-weight: 500;
-        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
-        padding: 28px 135px 12px 16px !important;
-        line-height: 1.35;
-    }
-
-    /* Control de tarjetas de Noticias sin que home.css las desacomode */
-    #noticias .news .nota {
-        display: flex !important;
-        flex-direction: column !important;
-    }
-
-        #noticias .news .nota .img {
-            position: relative !important;
-            height: 260px !important;
-            width: 100% !important;
-            background: #0d231b !important;
-            overflow: hidden !important;
-            cursor: zoom-in !important;
-            flex-shrink: 0 !important;
-        }
-
-            #noticias .news .nota .img img {
-                width: 100% !important;
-                height: 100% !important;
-                max-width: none !important;
-                object-fit: contain !important;
-                display: block !important;
-                transition: transform 0.25s ease;
-            }
-
-        #noticias .news .nota:first-child .img img {
-            object-fit: cover !important;
-        }
-
-        #noticias .news .nota .t {
-            display: block !important;
-            position: static !important;
-            flex: 1 !important;
-        }
-
-        #noticias .news .nota .img:hover img {
-            transform: scale(1.03);
-        }
-
-    .zoom-hint {
-        position: absolute;
-        bottom: 8px;
-        right: 8px;
-        background: rgba(12, 38, 28, 0.85);
-        color: #ffffff;
-        font-size: 0.75rem;
-        padding: 4px 10px;
-        border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        pointer-events: none;
-    }
-
-    #visorImg {
-        border: none;
-        border-radius: 12px;
-        padding: 14px;
-        background: #0c221a;
-        color: #ffffff;
-        width: fit-content;
-        max-width: 92vw;
-        max-height: 92vh;
-        overflow: hidden;
-        margin: auto;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75);
-    }
-
-        #visorImg::backdrop {
-            background: rgba(0, 0, 0, 0.82);
-        }
-
-        #visorImg img {
-            max-width: 86vw;
-            max-height: 78vh;
-            width: auto;
-            height: auto;
-            object-fit: contain;
-            display: block;
-            margin: 0 auto;
-            border-radius: 6px;
-        }
-</style>
-
-<dialog id="visorImg" onclick="if(event.target === this) this.close()">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:16px;">
-        <strong id="visorTitulo" style="font-size: 0.95rem;"></strong>
-        <button type="button" onclick="document.getElementById('visorImg').close()" style="background:#d97724; color:#fff; border:none; border-radius:6px; padding:4px 10px; cursor:pointer; font-weight:600;">Cerrar ✕</button>
     </div>
-    <img id="visorFoto" src="" alt="Vista ampliada" />
-</dialog>
+</section>
 
-<dialog id="dlg" aria-labelledby="dt">
-    <div class="dh"><h2 id="dt">Reportar un incidente ambiental</h2><button class="x" id="cerrar" type="button" aria-label="Cerrar">✕</button></div>
-    <form id="fi">
-        <label>Tipo de incidente<select required><option value="">Elige una opción</option><option>Incendio o quema</option><option>Tala ilegal</option><option>Caza o tráfico de fauna</option><option>Contaminación de agua</option><option>Otro</option></select></label>
-        <label>Ubicación<span class="row"><input id="ubi" required placeholder="Comunidad, cantón o coordenadas"><button type="button" id="gps">Usar mi ubicación</button></span><small id="gm"></small></label>
-        <label>¿Qué está pasando?<textarea required rows="3"></textarea></label>
-        <label>Fotografía<input type="file" id="foto" accept="image/*"></label><img id="pv" alt="Vista previa de la foto" hidden>
-        <button class="enviar" type="submit">Enviar reporte</button>
-    </form>
-    <div id="ok" hidden><h3>Reporte recibido</h3><p>Gracias. El equipo de salvaguardia lo revisará. Esta es una demostración: aún no se guarda en la base de datos.</p><button type="button" class="enviar" onclick="document.getElementById('dlg').close()">Cerrar</button></div>
-</dialog>
+<section class="atajos" aria-label="Accesos rápidos">
+    <div class="wrap">
+        <a class="atajo u rv" href="contacto#denuncia">
+            <div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M12 3 2 20h20zM12 10v4M12 17h.01" /></svg></div>
+            <span><b>Reportar un incidente</b><small>Con fotos y ubicación</small></span>
+        </a>
+        <a class="atajo rv d1" href="participantes/registro">
+            <div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2M9.5 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM17 10l2 2 3-3" /></svg></div>
+            <span><b>Registro de participantes</b><small>Inscríbete con tu DUI</small></span>
+        </a>
+        <a class="atajo rv d2" href="guardabosques">
+            <div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M12 21V8M12 8c-4 0-6-3-6-6 4 0 6 2 6 6zm0 4c4 0 6-3 6-6-4 0-6 2-6 6z" /></svg></div>
+            <span><b>Portal de guardabosques</b><small>Reportes de patrullaje</small></span>
+        </a>
+        <a class="atajo rv d3" href="#observatorio">
+            <div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z" /></svg></div>
+            <span><b>Pronóstico 48 horas</b><small>El Observatorio Informa</small></span>
+        </a>
+    </div>
+</section>
 
-<script>
-    function verImagen(ruta, titulo) {
-        document.getElementById('visorFoto').src = ruta;
-        document.getElementById('visorTitulo').textContent = titulo;
-        document.getElementById('visorImg').showModal();
-    }
-</script>
+<section class="stats">
+    <div class="wrap">
+        <div class="st rv"><b data-count="25">25</b><span>años cuidando el territorio</span></div>
+        <div class="st rv d1"><b data-count="5">5</b><span>programas de trabajo</span></div>
+        <div class="st rv d2"><b data-count="48" data-suffix=" h">48 h</b><span>de pronóstico oficial</span></div>
+        <div class="st rv d3"><b data-count="2">2</b><span>canales de denuncia: teléfono y WhatsApp</span></div>
+    </div>
+</section>
+
+<section class="s" id="plan">
+    <div class="wrap">
+        <div class="h2w rv">
+            <span class="eyebrow">Plan de trabajo</span>
+            <h2>Cinco programas, un mismo territorio</h2>
+            <p>Cada programa une conservación, producción y gobernanza para que el territorio y las familias mejoren juntos.</p>
+        </div>
+        <div class="programas">
+            @for (var i = 0; i < Contenido.Programas.Length; i++)
+            {
+                var p = Contenido.Programas[i];
+                <article class="pg rv">
+                    <span class="n">@((i + 1).ToString("00"))</span>
+                    <div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="@p.Icono" /></svg></div>
+                    <h3>@p.Titulo</h3>
+                    <p>@p.Resumen</p>
+                    <a class="mas" href="plan-de-trabajo">Conocer programa <svg class="i" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a>
+                </article>
+            }
+            <article class="pg cta rv">
+                <h3>Un solo plan, cinco programas</h3>
+                <p>Conservación, producción y gobernanza trabajando juntas.</p>
+                <a class="mas" href="plan-de-trabajo">Ver plan de trabajo completo</a>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="s alt" id="rio">
+    <div class="wrap feat">
+        <div class="ph rv" data-zoom="/img/agua-el-salvador.jpg" data-titulo="Aquí está el agua que da vida a El Salvador">
+            <img src="/img/agua-el-salvador.jpg" alt="Vista aérea del Río Lempa" />
+            <span class="tag">▶ Programa audiovisual</span>
+        </div>
+        <div class="rv d1">
+            <span class="eyebrow">Somos Río Lempa</span>
+            <h2>Aquí está el agua que da vida a El Salvador</h2>
+            <p>El Río Lempa abarca el 49 % del territorio del país y suministra el 68 % de sus recursos hídricos. Conoce cómo trabajamos con las comunidades de la cuenca.</p>
+            <div class="chips"><span>Reforestación en la cuenca</span><span>Sistemas agropastoriles</span><span>Agua para las comunidades</span></div>
+            <a class="boton prim" href="somos-rio-lempa">Ver el programa <svg class="i" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg></a>
+        </div>
+    </div>
+</section>
+
+<section class="s" id="noticias">
+    <div class="wrap">
+        <div class="h2w rv">
+            <span class="eyebrow">Noticias y comunicados</span>
+            <h2>Lo que está pasando en el territorio</h2>
+            <p>Haz clic en cualquier imagen para verla en tamaño completo.</p>
+        </div>
+        <div class="noticias">
+            <article class="nt rv">
+                <div class="im" data-zoom="/img/turismo-sendero.jpg" data-titulo="Brigadas comunitarias refuerzan la prevención de incendios"><img src="/img/turismo-sendero.jpg" alt="Sendero en el bosque de La Montañona" /></div>
+                <div class="b"><div class="d">Prevención</div><h3>Brigadas comunitarias refuerzan la prevención de incendios</h3><p>Familias y guardabosques coordinan rondas en las zonas más expuestas.</p></div>
+            </article>
+            <article class="nt rv d1">
+                <div class="im" data-zoom="/img/SRLAguayGobernanza.jpg" data-titulo="Mesa del agua con las comunidades"><img src="/img/SRLAguayGobernanza.jpg" alt="Agua y gobernanza" style="object-position:center 15%" /></div>
+                <div class="b"><div class="d">Agua</div><h3>Mesa del agua con las comunidades</h3><p>Acuerdos para cuidar las fuentes de la cuenca.</p></div>
+            </article>
+            <article class="nt rv d2">
+                <div class="im" data-zoom="/img/login-bg.jpg" data-titulo="Nuevos sistemas agropastoriles en marcha"><img src="/img/login-bg.jpg" alt="La Montañona sobre las nubes" style="object-position:center 70%" /></div>
+                <div class="b"><div class="d">Producción</div><h3>Nuevos sistemas agropastoriles en marcha</h3><p>Más hogares mejoran sus ingresos sin talar bosque.</p></div>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="s alt" id="aliados">
+    <div class="wrap">
+        <div class="h2w rv">
+            <span class="eyebrow">Convenios y alianzas</span>
+            <h2>Trabajamos junto a quienes cuidan el territorio</h2>
+        </div>
+        <div class="logos rv">
+            <div class="lg">ACACYPAC</div>
+            <div class="lg">Gobiernos locales</div>
+            <div class="lg">Cooperación técnica</div>
+            <a class="lg ph" href="alianzas">Ver todas las alianzas →</a>
+        </div>
+    </div>
+</section>
+
+<section class="band">
+    <div class="wrap">
+        <div>
+            <h2>¿Viste algo que afecte el bosque o el agua?</h2>
+            <p>Tu reporte llega directo al equipo de salvaguardia. Puedes adjuntar fotos y ubicación.</p>
+        </div>
+        <div class="ct">
+            <a class="boton ambar" href="contacto#denuncia"><svg class="i" viewBox="0 0 24 24"><path d="M12 3 2 20h20zM12 10v4M12 17h.01" /></svg> Hacer una denuncia</a>
+            <a class="boton vid" href="https://wa.me/50368615665">WhatsApp 6861-5665</a>
+        </div>
+    </div>
+</section>
