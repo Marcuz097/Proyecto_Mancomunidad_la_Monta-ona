@@ -1,21 +1,23 @@
+using System.Text.RegularExpressions;
 namespace LaMontanona.Services;
 
 public interface IFileStorageService
 {
-    /// <summary>Guarda una imagen en wwwroot/uploads/{subcarpeta} y devuelve la ruta relativa para la BD.</summary>
     Task<string?> GuardarFotoAsync(Stream contenido, string nombreOriginal, long longitud, string subcarpeta, CancellationToken ct = default);
-
-    /// <summary>Atajo para formularios con IFormFile (denuncias).</summary>
     Task<string?> GuardarFotoIncidenteAsync(IFormFile? archivo, CancellationToken ct = default);
-
+    /// <summary>Comprueba que la ruta sea una foto que subimos nosotros a esa carpeta y que exista.</summary>
+    bool EsRutaValida(string? ruta, string subcarpeta);
     void Eliminar(string? rutaRelativa);
 }
 
-public class FileStorageService(IWebHostEnvironment env) : IFileStorageService
+public partial class FileStorageService(IWebHostEnvironment env) : IFileStorageService
 {
     private static readonly string[] Extensiones = [".jpg", ".jpeg", ".png", ".webp"];
     private static readonly string[] Subcarpetas = ["incidentes", "reportes"];
     private const long MaxBytes = 5 * 1024 * 1024;
+
+    [GeneratedRegex(@"^[0-9a-f]{32}\.(jpg|jpeg|png|webp)$")]
+    private static partial Regex NombreGenerado();
 
     public Task<string?> GuardarFotoIncidenteAsync(IFormFile? archivo, CancellationToken ct = default) =>
         archivo is null || archivo.Length == 0
@@ -32,13 +34,21 @@ public class FileStorageService(IWebHostEnvironment env) : IFileStorageService
 
         var carpeta = Path.Combine(env.WebRootPath, "uploads", subcarpeta);
         Directory.CreateDirectory(carpeta);
-        var nombre = $"{Guid.NewGuid():N}{ext}"; // nunca se usa el nombre original
+        var nombre = $"{Guid.NewGuid():N}{ext}";
         var ruta = Path.Combine(carpeta, nombre);
 
         await using (var fs = File.Create(ruta)) await contenido.CopyToAsync(fs, ct);
 
         if (!EsImagenReal(ruta)) { File.Delete(ruta); throw new InvalidOperationException("El archivo no es una imagen válida."); }
         return $"/uploads/{subcarpeta}/{nombre}";
+    }
+
+    public bool EsRutaValida(string? ruta, string subcarpeta)
+    {
+        var prefijo = $"/uploads/{subcarpeta}/";
+        if (string.IsNullOrWhiteSpace(ruta) || !ruta.StartsWith(prefijo)) return false;
+        var nombre = ruta[prefijo.Length..];
+        return NombreGenerado().IsMatch(nombre) && File.Exists(Path.Combine(env.WebRootPath, "uploads", subcarpeta, nombre));
     }
 
     public void Eliminar(string? rutaRelativa)
@@ -48,7 +58,6 @@ public class FileStorageService(IWebHostEnvironment env) : IFileStorageService
         if (fisica.StartsWith(Path.GetFullPath(env.WebRootPath)) && File.Exists(fisica)) File.Delete(fisica);
     }
 
-    // Comprueba la firma del archivo, no solo la extensión
     private static bool EsImagenReal(string ruta)
     {
         Span<byte> h = stackalloc byte[12];

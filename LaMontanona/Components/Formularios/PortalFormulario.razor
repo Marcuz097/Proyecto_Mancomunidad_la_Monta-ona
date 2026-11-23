@@ -2,9 +2,11 @@
 @using LaMontanona.Services
 @using LaMontanona.ViewModels
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.JSInterop
+@implements IDisposable
 @inject AuthenticationStateProvider Auth
 @inject IReporteGuardabosqueService Servicio
-
+@inject IJSRuntime JS
 
     <p class="intro">Hola, <b>@nombre</b>. Registra aquí el reporte de cada patrullaje. <a href="/Identity/Account/Logout">Cerrar sesión</a></p>
 
@@ -34,15 +36,16 @@
             </label>
             <div class="campo full">
                 <label>Fotografía (opcional)
-                    <InputFile OnChange="OnFoto" accept="image/*" />
+                    <input id="foto-reporte" type="file" accept="image/jpeg,image/png,image/webp" />
                 </label>
-                @if (fotoError is not null) { <span class="validation-message">@fotoError</span> }
-                @if (fotoPreview is not null) { <img class="preview" src="@fotoPreview" alt="Vista previa de la foto" /> }
-                else if (fotoBytes is not null) { <small>Foto lista: @fotoNombre (@((fotoBytes.Length / 1048576d).ToString("0.0")) MB)</small> }
+                <div id="foto-preview"></div>
+                @if (subiendoFoto) { <small>Subiendo foto…</small> }
+                else if (fotoError is not null) { <span class="validation-message">@fotoError</span> }
+                else if (fotoRuta is not null) { <small>Foto lista para enviar.</small> }
             </div>
         </div>
 
-        <button class="btn" type="submit" disabled="@enviando">@(enviando ? "Enviando…" : "Enviar reporte")</button>
+        <button class="btn" type="submit" disabled="@(enviando || subiendoFoto)">@(enviando ? "Enviando…" : "Enviar reporte")</button>
     </EditForm>
 
     <h2 class="sub">Mis reportes recientes</h2>
@@ -68,16 +71,15 @@
     }
 
 @code {
-    const long MaxFoto = 5 * 1024 * 1024;
-    static readonly string[] Permitidas = [".jpg", ".jpeg", ".png", ".webp"];
+    const string InputId = "foto-reporte", PreviewId = "foto-preview";
 
     ReporteFormModel modelo = new();
     EditContext ctx = default!;
-    List<LaMontanona.Models.ReporteGuardabosque> recientes = new();
+    List<ReporteGuardabosque> recientes = new();
     string userId = "", nombre = "";
-    string? error, fotoError, fotoNombre, fotoPreview;
-    byte[]? fotoBytes;
-    bool enviando, enviado;
+    string? error, fotoError, fotoRuta;
+    bool enviando, enviado, subiendoFoto;
+    DotNetObjectReference<PortalFormulario>? self;
 
     protected override async Task OnInitializedAsync()
     {
@@ -88,31 +90,44 @@
         if (userId != "") recientes = await Servicio.MisReportesAsync(userId);
     }
 
-    async Task OnFoto(InputFileChangeEventArgs e)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        fotoError = null; fotoBytes = null; fotoPreview = null; fotoNombre = null;
-        var f = e.File;
-        if (!Permitidas.Contains(Path.GetExtension(f.Name).ToLowerInvariant())) { fotoError = "Usa una foto JPG, PNG o WEBP."; return; }
-        if (f.Size > MaxFoto) { fotoError = "La foto supera los 5 MB."; return; }
-        using var ms = new MemoryStream();
-        await f.OpenReadStream(MaxFoto).CopyToAsync(ms);
-        fotoBytes = ms.ToArray(); fotoNombre = f.Name;
-        if (fotoBytes.Length <= 1_500_000) fotoPreview = $"data:{f.ContentType};base64,{Convert.ToBase64String(fotoBytes)}";
+        if (!firstRender) return;
+        self = DotNetObjectReference.Create(this);
+        await JS.InvokeVoidAsync("fotos.init", InputId, PreviewId, "reportes", self);
+    }
+
+    // Los llama fotos.js: la foto viaja por HTTP, aquí solo llega el resultado.
+    [JSInvokable]
+    public async Task FotoSubiendo()
+    {
+        subiendoFoto = true; fotoRuta = null; fotoError = null;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    [JSInvokable]
+    public async Task FotoCambio(string? ruta, string? err)
+    {
+        subiendoFoto = false; fotoRuta = ruta; fotoError = err;
+        await InvokeAsync(StateHasChanged);
     }
 
     async Task Enviar()
     {
+        if (subiendoFoto) { error = "Espera a que termine de subir la foto."; return; }
         enviando = true; error = null; enviado = false;
         try
         {
-            await Servicio.CrearAsync(userId, modelo, fotoBytes, fotoNombre);
+            await Servicio.CrearAsync(userId, modelo, fotoRuta);
             recientes = await Servicio.MisReportesAsync(userId);
             modelo = new(); ctx = new EditContext(modelo);
-            fotoBytes = null; fotoPreview = null; fotoNombre = null;
-            enviado = true;
+            fotoRuta = null; fotoError = null; enviado = true;
+            await JS.InvokeVoidAsync("fotos.reset", InputId, PreviewId);
         }
         catch (InvalidOperationException ex) { error = ex.Message; }
         catch (Exception) { error = "No pudimos guardar el reporte. Intenta de nuevo."; }
         finally { enviando = false; }
     }
+
+    public void Dispose() => self?.Dispose();
 }

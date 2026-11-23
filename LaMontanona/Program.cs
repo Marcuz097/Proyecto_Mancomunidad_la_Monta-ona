@@ -1,5 +1,6 @@
 using LaMontanona.Components;
 using LaMontanona.Data;
+using LaMontanona.Endpoints;
 using LaMontanona.Services;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
@@ -26,9 +27,11 @@ if (!string.IsNullOrEmpty(gId))
         o.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
     });
 
-builder.Services.AddRazorComponents().AddInteractiveServerComponents(); // Blazor
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents(o => o.DetailedErrors = builder.Environment.IsDevelopment()); // Blazor
 builder.Services.AddRazorPages();                                        // Razor Pages (Identity UI)
 builder.Services.AddCascadingAuthenticationState();
+
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<IParticipanteService, ParticipanteService>();
 builder.Services.AddScoped<IReporteGuardabosqueService, ReporteGuardabosqueService>();
@@ -55,4 +58,5 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 app.MapRazorPages();
+app.MapFotoEndpoints();
 app.Run();
