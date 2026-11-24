@@ -23,6 +23,11 @@ public static class FotoEndpoints
         g.MapPost("/incidentes", Subir("incidentes"))
          .AllowAnonymous()
          .WithMetadata(new RequestSizeLimitAttribute(6 * 1024 * 1024));
+
+        // Imágenes de noticias y logos de alianzas: solo administradores
+        g.MapPost("/contenido", Subir("contenido"))
+         .RequireAuthorization(p => p.RequireRole(Roles.Admin))
+         .WithMetadata(new RequestSizeLimitAttribute(6 * 1024 * 1024));
     }
 
     private static Delegate Subir(string carpeta) =>

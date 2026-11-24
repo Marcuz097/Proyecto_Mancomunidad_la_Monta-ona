@@ -26,7 +26,20 @@
             <NavLink href="alianzas">Alianzas</NavLink>
             <a href="/#noticias">Noticias</a>
             <NavLink href="contacto">Contacto</NavLink>
-            <a class="acc" href="/Identity/Account/Login" data-enhance-nav="false">Acceso</a>
+                        <AuthorizeView>
+                <Authorized>
+                    <AuthorizeView Roles="Admin,Guardabosque" Context="rol">
+                        <a href="admin">Panel</a>
+                    </AuthorizeView>
+                    <form method="post" action="/Identity/Account/Logout?returnUrl=%2F">
+                        <AntiforgeryToken />
+                        <button type="submit" class="acc">Salir</button>
+                    </form>
+                </Authorized>
+                <NotAuthorized>
+                    <a class="acc" href="/Identity/Account/Login" data-enhance-nav="false">Acceso</a>
+                </NotAuthorized>
+            </AuthorizeView>
             <a class="den" href="contacto#denuncia">Hacer una denuncia</a>
         </nav>
     </div>
@@ -67,6 +80,6 @@
 </footer>
 
 <dialog id="visor" aria-label="Vista ampliada">
-    <div class="vh"><strong id="visorTitulo"></strong><button type="button" onclick="document.getElementById('visor').close()">Cerrar ✕</button></div>
+    <div class="vh"><strong id="visorTitulo"></strong><button type="button" id="visorCerrar">Cerrar ✕</button></div>
     <img id="visorFoto" src="" alt="Vista ampliada" />
 </dialog>

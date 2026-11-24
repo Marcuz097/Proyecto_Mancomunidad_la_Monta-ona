@@ -1,0 +1,40 @@
+﻿@page "/admin/mapa"
+@attribute [Authorize(Roles = Roles.Admin + "," + Roles.Guardabosque)]
+
+<PageTitle>Mapa de incidentes · Mancomunidad La Montañona</PageTitle>
+
+<PageBanner Migaja="Mapa de incidentes"
+            Titulo="Mapa de incidentes"
+            Subtitulo="Denuncias recibidas desde el sitio, con su ubicación, foto y estado de atención."
+            Imagen="/img/login-bg.jpg" Posicion="center 45%" />
+
+<section class="s alt">
+    <div class="wrap">
+        <div class="mapa-top">
+            <div class="mapa-chips" id="chips"></div>
+            <select id="fEstado" class="mapa-sel" aria-label="Filtrar por estado">
+                <option value="">Todos los estados</option>
+                <option value="0">Recibido</option>
+                <option value="1">En revisión</option>
+                <option value="2">Atendido</option>
+                <option value="3">Cerrado</option>
+            </select>
+            <span class="meta" id="resumen"></span>
+        </div>
+        <div class="mapa-grid">
+            <div id="mapa" class="mapa" data-admin="@(esAdmin ? "true" : "false")"><p style="padding:24px">Cargando mapa…</p></div>
+            <aside class="mapa-lista" id="lista" aria-label="Lista de incidentes"></aside>
+        </div>
+        <p class="meta" style="margin-top:14px">Los puntos de color indican el estado: ámbar = recibido, azul = en revisión, verde = atendido, gris = cerrado. Esta información es solo para el equipo.</p>
+    </div>
+</section>
+
+@code {
+    [CascadingParameter] Task<AuthenticationState>? Auth { get; set; }
+    bool esAdmin;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Auth is not null) esAdmin = (await Auth).User.IsInRole(Roles.Admin);
+    }
+}

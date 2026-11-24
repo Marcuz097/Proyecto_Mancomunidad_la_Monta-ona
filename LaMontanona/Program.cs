@@ -61,4 +61,6 @@ app.UseAntiforgery();
 app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 app.MapRazorPages();
 app.MapFotoEndpoints();
+app.MapIncidenteEndpoints();
+app.MapAvanceEndpoints();
 app.Run();

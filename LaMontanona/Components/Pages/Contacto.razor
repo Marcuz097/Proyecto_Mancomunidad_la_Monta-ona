@@ -22,8 +22,16 @@
                 <div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Zm0 1 8 6 8-6" /></svg></div>
                 <div><b>salvaguardia@@mlm.org.sv</b><small>mancomunidadlamontañona@@outlook.com</small></div>
             </a>
+            <form class="seg rv d3" id="fseg">
+                <b>¿Cómo va tu denuncia?</b>
+                <span class="row"><input id="cseg" placeholder="Tu código, ej. MLM-00012" autocomplete="off" /><button type="submit" class="boton cont">Consultar</button></span>
+                <small id="rseg" role="status"></small>
+            </form>
             <div class="map rv d3">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d451.82174600888897!2d-88.93382957793516!3d14.034040484224871!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8f6365b0823e8ecd%3A0x648cb41cdc459997!2sMancomunidad%20La%20Monta%C3%B1ona!5e1!3m2!1ses!2ssv!4v1795467421115!5m2!1ses!2ssv" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                <div>
+                    <svg class="i" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11zM12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" /></svg><br />
+                    Mapa de ubicación de la oficina<br /><small>Dirección y horario por confirmar</small>
+                </div>
             </div>
         </div>
 
@@ -33,7 +41,7 @@
                 <p>Tu reporte llega al equipo de salvaguardia. Puedes adjuntar una fotografía y tu ubicación.</p>
                 <label class="fl">
                     <span>Tipo de incidente</span>
-                    <select required>
+                    <select name="tipo" required>
                         <option value="">Elige una opción</option>
                         <option>Incendio o quema</option>
                         <option>Tala ilegal</option>
@@ -44,19 +52,27 @@
                 </label>
                 <label class="fl">
                     <span>Ubicación</span>
-                    <span class="row"><input id="ubi" required placeholder="Comunidad, cantón o coordenadas" /><button type="button" id="gps">Usar mi ubicación</button></span>
+                    <span class="row"><input id="ubi" name="ubicacion" required maxlength="300" placeholder="Comunidad, cantón o coordenadas" /><button type="button" id="gps">Usar mi ubicación</button></span>
                     <small id="gm"></small>
                 </label>
-                <label class="fl"><span>¿Qué está pasando?</span><textarea required placeholder="Cuéntanos qué viste…"></textarea></label>
-                <label class="fl"><span>Fotografía (opcional)</span><input type="file" id="foto" accept="image/*" /></label>
+                <input type="hidden" name="lat" id="lat" />
+                <input type="hidden" name="lng" id="lng" />
+                <label class="fl"><span>¿Qué está pasando?</span><textarea name="descripcion" required minlength="5" maxlength="2000" placeholder="Cuéntanos qué viste…"></textarea></label>
+                <label class="fl"><span>Fotografía (opcional)</span><input type="file" id="foto" name="foto" accept="image/*" /></label>
                 <img id="vprev" alt="Vista previa de la foto" hidden />
-                <label class="chk"><input type="checkbox" /> Prefiero enviar mi denuncia de forma anónima</label>
-                <button type="submit" class="boton ambar full">Enviar denuncia</button>
+                <div id="datosDen">
+                    <label class="fl"><span>Tu nombre (opcional)</span><input name="nombre" maxlength="120" /></label>
+                    <label class="fl"><span>Teléfono o correo para contactarte (opcional)</span><input name="contacto" maxlength="120" /></label>
+                </div>
+                <label class="chk"><input type="checkbox" id="anon" name="anonimo" /> Prefiero enviar mi denuncia de forma anónima</label>
+                <p class="den-error" id="errd" role="alert" hidden></p>
+                <button type="submit" id="btnDen" class="boton ambar full">Enviar denuncia</button>
             </form>
             <div id="okd" class="okmsg" hidden>
                 <h3>Reporte recibido</h3>
-                <p>Gracias. El equipo de salvaguardia lo revisará.</p>
-                <p class="suave"><small>Esta es una demostración: aún no se guarda en la base de datos.</small></p>
+                <p>Gracias. El equipo de salvaguardia lo revisará. Guarda tu código de seguimiento:</p>
+                <p class="codigo" id="codd"></p>
+                <p class="suave"><small>Con este código puedes consultar cómo va tu denuncia en esta misma página.</small></p>
                 <a class="boton cont" href="">Volver al inicio</a>
             </div>
         </div>

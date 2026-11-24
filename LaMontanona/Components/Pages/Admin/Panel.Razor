@@ -1,0 +1,53 @@
+﻿@page "/admin"
+@attribute [Authorize(Roles = Roles.Admin + "," + Roles.Guardabosque)]
+
+<PageTitle>Panel · Mancomunidad La Montañona</PageTitle>
+
+<PageBanner Migaja="Panel"
+            Titulo="Panel de la Mancomunidad"
+            Subtitulo="Herramientas para el equipo: incidentes, avance de programas y contenido del sitio."
+            Imagen="/img/login-bg.jpg" Posicion="center 55%" />
+
+<section class="s alt">
+    <div class="wrap">
+        <div class="ad-grid">
+            <a class="ad-tile rv" href="admin/mapa">
+                <div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11zM12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" /></svg></div>
+                <h3>Mapa de incidentes</h3>
+                <p>Denuncias con ubicación y foto, filtros y estado de atención.</p>
+            </a>
+            <a class="ad-tile rv d1" href="guardabosques">
+                <div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M12 21V8M12 8c-4 0-6-3-6-6 4 0 6 2 6 6zm0 4c4 0 6-3 6-6-4 0-6 2-6 6z" /></svg></div>
+                <h3>Portal de guardabosques</h3>
+                <p>Reportes de patrullaje con fotos.</p>
+            </a>
+            <a class="ad-tile rv d2" href="participantes/registro">
+                <div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M16 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2M9.5 10a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM17 10l2 2 3-3" /></svg></div>
+                <h3>Registro de participantes</h3>
+                <p>Inscribe familias en uno o varios programas.</p>
+            </a>
+            <AuthorizeView Roles="Admin" Context="adm">
+                <a class="ad-tile rv" href="admin/avance">
+                    <div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /></svg></div>
+                    <h3>Avance por programa</h3>
+                    <p>Metas, avance y participantes de los 5 programas. Descarga a Excel.</p>
+                </a>
+                <a class="ad-tile rv d1" href="admin/noticias">
+                    <div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4zM9 9h6M9 13h6" /></svg></div>
+                    <h3>Noticias</h3>
+                    <p>Publica y edita lo que aparece en la portada.</p>
+                </a>
+                <a class="ad-tile rv d2" href="admin/alianzas">
+                    <div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M8 12l3 3a2.5 2.5 0 0 0 3.5 0l5-5M3 11l5-5 3 1 4-1 6 6" /></svg></div>
+                    <h3>Alianzas</h3>
+                    <p>Agrega convenios con su logo y descripción.</p>
+                </a>
+                <a class="ad-tile rv" href="admin/observatorio">
+                    <div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z" /></svg></div>
+                    <h3>Observatorio</h3>
+                    <p>Pronóstico y alerta que se ven en la portada.</p>
+                </a>
+            </AuthorizeView>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,81 @@
+﻿@page "/admin/observatorio"
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = Roles.Admin)]
+@inject ApplicationDbContext Db
+
+<PageTitle>Observatorio · Panel · La Montañona</PageTitle>
+
+<PageBanner Migaja="Observatorio"
+            Titulo="El Observatorio Informa"
+            Subtitulo="El pronóstico y la alerta de aquí se muestran en la tarjeta de la portada."
+            Imagen="/img/login-bg.jpg" Posicion="center 45%" />
+
+<section class="s alt">
+    <div class="wrap">
+        <div class="ad-form">
+            <h2>Pronóstico de hoy</h2>
+            @if (ok is not null)
+            {
+                <p class="ad-msg ok" role="status">@ok</p>
+            }
+            @if (error is not null)
+            {
+                <p class="ad-msg er" role="alert">@error</p>
+            }
+            <label class="fl"><span>Resumen</span><textarea maxlength="800" @bind="modelo.Resumen" placeholder="Lluvias dispersas en la tarde y viento leve."></textarea></label>
+            <div class="two">
+                <label class="fl"><span>Temperatura mínima (°C)</span><input type="number" @bind="modelo.TempMinC" /></label>
+                <label class="fl"><span>Temperatura máxima (°C)</span><input type="number" @bind="modelo.TempMaxC" /></label>
+            </div>
+            <div class="two">
+                <label class="fl"><span>Probabilidad de lluvia (0 a 100 %)</span><input type="number" min="0" max="100" @bind="modelo.ProbLluviaPct" /></label>
+                <label class="fl">
+                    <span>Nivel de alerta</span>
+                    <select @bind="modelo.Alerta">
+                        @foreach (var n in Enum.GetValues<NivelAlerta>())
+                        {
+                            <option value="@n">@n</option>
+                        }
+                    </select>
+                </label>
+            </div>
+            <label class="fl"><span>Mensaje de alerta</span><input maxlength="400" @bind="modelo.MensajeAlerta" placeholder="Tormentas en la tarde. Evite quemas y senderos cercanos a quebradas." /></label>
+            <label class="chk"><input type="checkbox" @bind="modelo.Publicado" /> Publicado en la portada</label>
+            <button type="button" class="boton prim" @onclick="Guardar">Guardar</button>
+        </div>
+    </div>
+</section>
+
+@code {
+    PronosticoObservatorio modelo = new() { Publicado = true };
+    string? error, ok;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var ultimo = await Db.Pronosticos.OrderByDescending(p => p.VigenteDesde).ThenByDescending(p => p.Id).FirstOrDefaultAsync();
+        if (ultimo is not null) modelo = ultimo;
+    }
+
+    async Task Guardar()
+    {
+        ok = error = null;
+        if (string.IsNullOrWhiteSpace(modelo.Resumen)) { error = "Escribe el resumen del pronóstico."; return; }
+        if (modelo.ProbLluviaPct < 0 || modelo.ProbLluviaPct > 100) { error = "La lluvia va de 0 a 100 %."; return; }
+        if (modelo.TempMinC > modelo.TempMaxC) { error = "La mínima no puede ser mayor que la máxima."; return; }
+        try
+        {
+            modelo.Resumen = modelo.Resumen.Trim();
+            modelo.VigenteDesde = DateTime.UtcNow;
+            if (modelo.Id == 0) Db.Pronosticos.Add(modelo);
+            await Db.SaveChangesAsync();
+            ok = "Guardado. Ya se ve en la portada.";
+        }
+        catch (Exception) { error = "No pudimos guardar. Revisa los datos e inténtalo de nuevo."; }
+    }
+}
+namespace LaMontanona.Components.Pages.Admin
+{
+    public class AdminObservatorio
+    {
+    }
+}

@@ -1,0 +1,189 @@
+﻿@page "/admin/noticias"
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = Roles.Admin)]
+@using LaMontanona.Services
+@inject ApplicationDbContext Db
+@inject IFileStorageService Archivos
+@inject IJSRuntime JS
+@implements IDisposable
+
+<PageTitle>Noticias · Panel · La Montañona</PageTitle>
+
+<PageBanner Migaja="Noticias"
+            Titulo="Noticias y comunicados"
+            Subtitulo="Lo que publiques aquí aparece en la portada del sitio."
+            Imagen="/img/turismo-sendero.jpg" Posicion="center 60%" />
+
+<section class="s alt">
+    <div class="wrap">
+        <div class="ad-form">
+            <h2>@(editId == 0 ? "Nueva noticia" : "Editar noticia")</h2>
+            @if (ok is not null)
+            {
+                <p class="ad-msg ok" role="status">@ok</p>
+            }
+            @if (error is not null)
+            {
+                <p class="ad-msg er" role="alert">@error</p>
+            }
+            <div class="two">
+                <label class="fl"><span>Título</span><input maxlength="160" @bind="modelo.Titulo" /></label>
+                <label class="fl"><span>Categoría</span><input maxlength="40" placeholder="Agua, Prevención, Producción…" @bind="modelo.Categoria" /></label>
+            </div>
+            <label class="fl"><span>Resumen</span><textarea maxlength="600" @bind="modelo.Resumen"></textarea></label>
+            <label class="fl"><span>Imagen (JPG, PNG o WEBP, máx. 5 MB)</span><input type="file" id="@InputId" accept="image/*" /></label>
+            <div id="@PreviewId"></div>
+            @if (subiendo)
+            {
+                <p class="meta">Subiendo imagen…</p>
+            }
+            @if (editId != 0 && fotoRuta is null)
+            {
+                <p class="meta">Si no eliges otra imagen, se conserva la actual.</p>
+            }
+            <label class="chk"><input type="checkbox" @bind="modelo.Publicada" /> Publicada en el sitio</label>
+            <div class="btns">
+                <button type="button" class="boton prim" @onclick="Guardar" disabled="@subiendo">Guardar</button>
+                @if (editId != 0)
+                {
+                    <button type="button" class="boton cont" @onclick="Cancelar">Cancelar</button>
+                }
+            </div>
+        </div>
+
+        <div class="ad-lista">
+            @foreach (var n in items)
+            {
+                <div class="ad-item">
+                    <img src="@(n.RutaImagen ?? "/img/login-bg.jpg")" alt="" />
+                    <div>
+                        <b>@n.Titulo</b> @if (!n.Publicada) {
+                        <span class="ad-tag">Oculta</span>
+                    }
+                    <br />
+                    <small>@n.Categoria · @n.Fecha.ToLocalTime().ToString("dd/MM/yyyy")</small>
+                </div>
+                <div class="acc">
+                    <button type="button" @onclick="() => Editar(n)">Editar</button>
+                    <button type="button" @onclick="() => Alternar(n)">@(n.Publicada ? "Ocultar" : "Publicar")</button>
+                    @if (confirmarId == n.Id)
+                    {
+                        <button type="button" class="pel" @onclick="() => Eliminar(n)">¿Seguro? Eliminar</button>
+                    }
+                    else
+                    {
+                        <button type="button" class="pel" @onclick="() => confirmarId = n.Id">Eliminar</button>
+                    }
+                </div>
+            </div>
+        }
+        @if (items.Count == 0)
+        {
+            <p class="meta">Todavía no hay noticias.</p>
+        }
+    </div>
+</div>
+</section>
+
+@code {
+    const string InputId = "fotoNoticia", PreviewId = "prevNoticia";
+    List<Noticia> items = new();
+    Noticia modelo = new();
+    int editId, confirmarId;
+    string? error, ok, fotoRuta;
+    bool subiendo;
+    DotNetObjectReference<AdminNoticias>? self;
+
+    protected override async Task OnInitializedAsync() => await Cargar();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        self = DotNetObjectReference.Create(this);
+        await JS.InvokeVoidAsync("fotos.init", InputId, PreviewId, "contenido", self);
+    }
+
+    [JSInvokable]
+    public async Task FotoSubiendo() { subiendo = true; fotoRuta = null; error = null; await InvokeAsync(StateHasChanged); }
+
+    [JSInvokable]
+    public async Task FotoCambio(string? ruta, string? err)
+    {
+        subiendo = false; fotoRuta = ruta;
+        if (err is not null) error = err;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    async Task Cargar() => items = await Db.Noticias.AsNoTracking().OrderByDescending(n => n.Fecha).ToListAsync();
+
+    async Task Limpiar()
+    {
+        modelo = new(); editId = 0; fotoRuta = null;
+        await JS.InvokeVoidAsync("fotos.reset", InputId, PreviewId);
+    }
+
+    async Task Editar(Noticia n)
+    {
+        ok = error = null;
+        modelo = new Noticia { Titulo = n.Titulo, Categoria = n.Categoria, Resumen = n.Resumen, Publicada = n.Publicada };
+        editId = n.Id; fotoRuta = null;
+        await JS.InvokeVoidAsync("fotos.reset", InputId, PreviewId);
+        await JS.InvokeVoidAsync("window.scrollTo", 0, 0);
+    }
+
+    async Task Cancelar() { ok = error = null; await Limpiar(); }
+
+    async Task Guardar()
+    {
+        ok = error = null;
+        if (subiendo) { error = "Espera a que termine de subir la imagen."; return; }
+        if (string.IsNullOrWhiteSpace(modelo.Titulo) || string.IsNullOrWhiteSpace(modelo.Resumen)) { error = "Escribe el título y el resumen."; return; }
+        if (!string.IsNullOrEmpty(fotoRuta) && !Archivos.EsRutaValida(fotoRuta, "contenido")) { error = "La imagen no es válida. Súbela de nuevo."; return; }
+        try
+        {
+            if (editId == 0)
+            {
+                Db.Noticias.Add(new Noticia
+                {
+                    Titulo = modelo.Titulo.Trim(),
+                    Categoria = (modelo.Categoria ?? "").Trim(),
+                    Resumen = modelo.Resumen.Trim(),
+                    RutaImagen = fotoRuta,
+                    Publicada = modelo.Publicada,
+                    Fecha = DateTime.UtcNow
+                });
+            }
+            else
+            {
+                var n = await Db.Noticias.FindAsync(editId);
+                if (n is null) { error = "No se encontró la noticia."; return; }
+                n.Titulo = modelo.Titulo.Trim(); n.Categoria = (modelo.Categoria ?? "").Trim();
+                n.Resumen = modelo.Resumen.Trim(); n.Publicada = modelo.Publicada;
+                if (fotoRuta is not null) { Archivos.Eliminar(n.RutaImagen); n.RutaImagen = fotoRuta; }
+            }
+            await Db.SaveChangesAsync();
+            ok = editId == 0 ? "Noticia publicada." : "Cambios guardados.";
+            await Limpiar();
+        }
+        catch (Exception) { error = "No pudimos guardar. Revisa los datos e inténtalo de nuevo."; }
+        finally { Db.ChangeTracker.Clear(); }
+        await Cargar();
+    }
+
+    async Task Alternar(Noticia n)
+    {
+        var nuevo = !n.Publicada;
+        await Db.Noticias.Where(x => x.Id == n.Id).ExecuteUpdateAsync(s => s.SetProperty(x => x.Publicada, nuevo));
+        await Cargar();
+    }
+
+    async Task Eliminar(Noticia n)
+    {
+        confirmarId = 0;
+        await Db.Noticias.Where(x => x.Id == n.Id).ExecuteDeleteAsync();
+        Archivos.Eliminar(n.RutaImagen);
+        await Cargar();
+    }
+
+    public void Dispose() => self?.Dispose();
+}

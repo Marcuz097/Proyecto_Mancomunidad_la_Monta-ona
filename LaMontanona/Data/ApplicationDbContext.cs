@@ -14,7 +14,9 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     public DbSet<IncidenteDenuncia> Incidentes => Set<IncidenteDenuncia>();
     public DbSet<ReporteGuardabosque> ReportesGuardabosque => Set<ReporteGuardabosque>();
     public DbSet<PronosticoObservatorio> Pronosticos => Set<PronosticoObservatorio>();
-
+    public DbSet<Actividad> Actividades => Set<Actividad>();
+    public DbSet<Noticia> Noticias => Set<Noticia>();
+    public DbSet<Alianza> Alianzas => Set<Alianza>();
     protected override void OnModelCreating(ModelBuilder b)
     {
         base.OnModelCreating(b);
@@ -33,6 +35,10 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
             .HasForeignKey(r => r.GuardabosqueId).OnDelete(DeleteBehavior.Restrict);
         b.Entity<ReporteGuardabosque>().Property(r => r.KmRecorridos).HasPrecision(6, 2);
 
+        b.Entity<Actividad>().Property(a => a.Meta).HasPrecision(12, 2);
+        b.Entity<Actividad>().Property(a => a.Avance).HasPrecision(12, 2);
+        b.Entity<Actividad>().HasOne(a => a.Programa).WithMany()
+            .HasForeignKey(a => a.ProgramaId).OnDelete(DeleteBehavior.Restrict);
         b.Entity<Programa>().HasData(
             new Programa { Id = 1, Orden = 1, Nombre = "Protección y conservación del bosque y la biodiversidad" },
             new Programa { Id = 2, Orden = 2, Nombre = "Restauración y producción sostenible", Descripcion = "Incluye sistemas agropastoriles que generan ingresos familiares." },

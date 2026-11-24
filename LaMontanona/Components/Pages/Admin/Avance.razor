@@ -1,0 +1,167 @@
+﻿@page "/admin/avance"
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = Roles.Admin)]
+@using System.Globalization
+@inject ApplicationDbContext Db
+
+<PageTitle>Avance por programa · Mancomunidad La Montañona</PageTitle>
+
+<PageBanner Migaja="Avance por programa"
+            Titulo="Avance por programa"
+            Subtitulo="Metas y resultados de cada línea del plan de trabajo, con los participantes inscritos."
+            Imagen="/img/login-bg.jpg" Posicion="center 60%" />
+
+<section class="s alt">
+    <div class="wrap">
+        @if (programas is null)
+        {
+            <p>Cargando…</p>
+        }
+        else
+        {
+            <div class="ad-top">
+                <div class="ad-total"><b>@PctGlobal().ToString("0") %</b><span>avance general del plan</span></div>
+                <div class="ad-total"><b>@totalParticipantes</b><span>participantes en el registro único</span></div>
+                <a class="boton prim" href="/api/avance/exportar" download>Descargar para Excel (CSV)</a>
+            </div>
+
+            @if (error is not null)
+            {
+                <p class="ad-msg er" role="alert">@error</p>
+            }
+
+            @foreach (var p in programas)
+            {
+                var acts = actividades.Where(a => a.ProgramaId == p.Id).ToList();
+                <article class="ad-card">
+                    <header>
+                        <h3>@p.Orden. @p.Nombre</h3>
+                        <span class="meta">@(inscritos.GetValueOrDefault(p.Id)) participantes inscritos · @PctPrograma(acts).ToString("0") % de avance</span>
+                    </header>
+                    @if (acts.Count == 0)
+                    {
+                        <p class="meta">Aún no hay actividades en este programa. Agrega la primera en el formulario de abajo.</p>
+                    }
+                    @foreach (var a in acts)
+                    {
+                        <div class="ad-act">
+                            <div>
+                                <b>@a.Nombre</b>@if (a.Ejemplo) {
+                                <span class="ad-tag">Ejemplo</span>
+                            }
+                            <div class="ad-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="@Pct(a).ToString("0")">
+                                <i style="width:@(Pct(a).ToString("0.#", CultureInfo.InvariantCulture))%"></i>
+                            </div>
+                        </div>
+                        <div class="ad-nums">
+                            <span>Avance</span>
+                            <input type="number" step="any" min="0" value="@Num(a.Avance)" @onchange="e => GuardarNumero(a.Id, true, e)" aria-label="Avance" />
+                            <span>de</span>
+                            <input type="number" step="any" min="0" value="@Num(a.Meta)" @onchange="e => GuardarNumero(a.Id, false, e)" aria-label="Meta" />
+                            <span>@a.Unidad · @Pct(a).ToString("0") %</span>
+                        </div>
+                        <div>
+                            @if (confirmarId == a.Id)
+                            {
+                                <button type="button" class="ad-x" @onclick="() => Eliminar(a.Id)">¿Seguro? Eliminar</button>
+                            }
+                            else
+                            {
+                                <button type="button" class="ad-x" @onclick="() => confirmarId = a.Id">Quitar</button>
+                            }
+                        </div>
+                    </div>
+                }
+            </article>
+        }
+
+        <div class="ad-form">
+            <h2>Agregar una actividad</h2>
+            <label class="fl">
+                <span>Programa</span>
+                <select @bind="nuevoProgramaId">
+                    @foreach (var p in programas)
+                    {
+                        <option value="@p.Id">@p.Orden. @p.Nombre</option>
+                    }
+                </select>
+            </label>
+            <label class="fl"><span>Actividad</span><input maxlength="200" @bind="nuevoNombre" placeholder="Ej. Familias con huertos familiares" /></label>
+            <div class="two">
+                <label class="fl"><span>Meta (número)</span><input type="number" step="any" min="0" @bind="nuevaMeta" /></label>
+                <label class="fl"><span>Unidad</span><input maxlength="30" @bind="nuevaUnidad" placeholder="familias, hectáreas, talleres…" /></label>
+            </div>
+            <button type="button" class="boton prim" @onclick="Agregar">Agregar actividad</button>
+        </div>
+    }
+</div>
+</section>
+
+@code {
+    List<Programa>? programas;
+    List<Actividad> actividades = new();
+    Dictionary<int, int> inscritos = new();
+    int totalParticipantes, nuevoProgramaId, confirmarId;
+    string nuevoNombre = "", nuevaUnidad = "";
+    decimal nuevaMeta;
+    string? error;
+
+    protected override async Task OnInitializedAsync() => await Cargar();
+
+    async Task Cargar()
+    {
+        programas = await Db.Programas.AsNoTracking().OrderBy(p => p.Orden).ToListAsync();
+        actividades = await Db.Actividades.AsNoTracking().OrderBy(a => a.Id).ToListAsync();
+        inscritos = await Db.Inscripciones.AsNoTracking().GroupBy(i => i.ProgramaId)
+            .Select(g => new { g.Key, N = g.Count() }).ToDictionaryAsync(x => x.Key, x => x.N);
+        totalParticipantes = await Db.Participantes.CountAsync();
+        if (nuevoProgramaId == 0 && programas.Count > 0) nuevoProgramaId = programas[0].Id;
+    }
+
+    async Task GuardarNumero(int id, bool esAvance, ChangeEventArgs e)
+    {
+        error = null;
+        if (!decimal.TryParse(e.Value?.ToString(), NumberStyles.Any, CultureInfo.InvariantCulture, out var v) || v < 0)
+        {
+            error = "Escribe un número válido (0 o mayor).";
+            return;
+        }
+        if (esAvance) await Db.Actividades.Where(a => a.Id == id).ExecuteUpdateAsync(s => s.SetProperty(a => a.Avance, v));
+        else await Db.Actividades.Where(a => a.Id == id).ExecuteUpdateAsync(s => s.SetProperty(a => a.Meta, v));
+        await Cargar();
+    }
+
+    async Task Agregar()
+    {
+        error = null;
+        if (string.IsNullOrWhiteSpace(nuevoNombre)) { error = "Escribe el nombre de la actividad."; return; }
+        if (nuevaMeta <= 0) { error = "La meta debe ser mayor que 0."; return; }
+        try
+        {
+            Db.Actividades.Add(new Actividad
+            {
+                ProgramaId = nuevoProgramaId,
+                Nombre = nuevoNombre.Trim(),
+                Unidad = (nuevaUnidad ?? "").Trim(),
+                Meta = nuevaMeta
+            });
+            await Db.SaveChangesAsync();
+            nuevoNombre = ""; nuevaUnidad = ""; nuevaMeta = 0;
+        }
+        catch (Exception) { error = "No pudimos guardar la actividad. Revisa los datos."; }
+        finally { Db.ChangeTracker.Clear(); }
+        await Cargar();
+    }
+
+    async Task Eliminar(int id)
+    {
+        confirmarId = 0;
+        await Db.Actividades.Where(a => a.Id == id).ExecuteDeleteAsync();
+        await Cargar();
+    }
+
+    static string Num(decimal d) => d.ToString("0.##", CultureInfo.InvariantCulture);
+    static double Pct(Actividad a) => a.Meta <= 0 ? 0 : Math.Min(100, (double)(a.Avance / a.Meta * 100));
+    static double PctPrograma(List<Actividad> l) => l.Count == 0 ? 0 : l.Average(Pct);
+    double PctGlobal() => actividades.Count == 0 ? 0 : actividades.Average(Pct);
+}

@@ -3,6 +3,7 @@
 @using System.Text.Json
 @using System.Text.Json.Serialization
 @inject IHttpClientFactory HttpClientFactory
+@inject ApplicationDbContext Db
 
 <PageTitle>Mancomunidad La Montañona · Hábitat para comunidad</PageTitle>
 
@@ -153,19 +154,20 @@
             <h2>Lo que está pasando en el territorio</h2>
             <p>Haz clic en cualquier imagen para verla en tamaño completo.</p>
         </div>
+        @if (noticias.Count == 0)
+        {
+            <p class="meta">Pronto publicaremos novedades del territorio.</p>
+        }
         <div class="noticias">
-            <article class="nt rv">
-                <div class="im" data-zoom="/img/turismo-sendero.jpg" data-titulo="Brigadas comunitarias refuerzan la prevención de incendios"><img src="/img/turismo-sendero.jpg" alt="Sendero en el bosque de La Montañona" /></div>
-                <div class="b"><div class="d">Prevención</div><h3>Brigadas comunitarias refuerzan la prevención de incendios</h3><p>Familias y guardabosques coordinan rondas en las zonas más expuestas.</p></div>
-            </article>
-            <article class="nt rv d1">
-                <div class="im" data-zoom="/img/SRLAguayGobernanza.jpg" data-titulo="Mesa del agua con las comunidades"><img src="/img/SRLAguayGobernanza.jpg" alt="Agua y gobernanza" style="object-position:center 15%" /></div>
-                <div class="b"><div class="d">Agua</div><h3>Mesa del agua con las comunidades</h3><p>Acuerdos para cuidar las fuentes de la cuenca.</p></div>
-            </article>
-            <article class="nt rv d2">
-                <div class="im" data-zoom="/img/login-bg.jpg" data-titulo="Nuevos sistemas agropastoriles en marcha"><img src="/img/login-bg.jpg" alt="La Montañona sobre las nubes" style="object-position:center 70%" /></div>
-                <div class="b"><div class="d">Producción</div><h3>Nuevos sistemas agropastoriles en marcha</h3><p>Más hogares mejoran sus ingresos sin talar bosque.</p></div>
-            </article>
+            @for (var i = 0; i < noticias.Count; i++)
+            {
+                var n = noticias[i];
+                var img = n.RutaImagen ?? "/img/login-bg.jpg";
+                <article class="nt rv @(i == 1 ? "d1" : i == 2 ? "d2" : "")">
+                    <div class="im" data-zoom="@img" data-titulo="@n.Titulo"><img src="@img" alt="@n.Titulo" /></div>
+                    <div class="b"><div class="d">@n.Categoria</div><h3>@n.Titulo</h3><p>@n.Resumen</p></div>
+                </article>
+            }
         </div>
     </div>
 </section>
@@ -177,9 +179,20 @@
             <h2>Trabajamos junto a quienes cuidan el territorio</h2>
         </div>
         <div class="logos rv">
-            <div class="lg">ACACYPAC</div>
-            <div class="lg">Gobiernos locales</div>
-            <div class="lg">Cooperación técnica</div>
+            @foreach (var a in alianzas)
+            {
+                <div class="lg">
+                    @if (a.RutaLogo is not null)
+                    {
+                        <img src="@a.RutaLogo" alt="@a.Nombre" style="max-height:78px;max-width:100%;object-fit:contain" />
+                    }
+                    else
+                    {
+
+                        @a.Nombre
+                    }
+                </div>
+            }
             <a class="lg ph" href="alianzas">Ver todas las alianzas →</a>
         </div>
     </div>
@@ -375,8 +388,16 @@
     private List<HoraItem> HorasManana = new();
     private List<HoraItem> HorasActuales => diaSeleccionado == 0 ? HorasHoy : HorasManana;
 
+    List<Noticia> noticias = new();
+    List<Alianza> alianzas = new();
+
     protected override async Task OnInitializedAsync()
     {
+        noticias = await Db.Noticias.AsNoTracking().Where(n => n.Publicada)
+            .OrderByDescending(n => n.Fecha).Take(3).ToListAsync();
+        alianzas = await Db.Alianzas.AsNoTracking().Where(a => a.Publicada)
+            .OrderBy(a => a.Orden).Take(3).ToListAsync();
+
         int[] horasObj = { 0, 3, 6, 9, 12, 15, 18, 21 };
         foreach (var h in horasObj)
         {

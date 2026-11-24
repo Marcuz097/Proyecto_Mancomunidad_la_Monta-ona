@@ -9,7 +9,7 @@
             var d = document.documentElement;
             d.classList.add('js');
             if (localStorage.getItem('tema') === 'dark') d.dataset.theme = 'dark';
-            var f = +localStorage.getItem('fs'); if (f) d.dataset.fs = f;
+            var f = localStorage.getItem('fs') || '0'; if (+f) d.dataset.fs = f;
         } catch (e) { }
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -21,6 +21,8 @@
 <body>
     <Routes />
     <script src="_framework/blazor.web.js"></script>
+    <script src="js/fotos.js"></script>
     <script src="js/site.js"></script>
+    <script src="js/mapa.js"></script>
 </body>
 </html>

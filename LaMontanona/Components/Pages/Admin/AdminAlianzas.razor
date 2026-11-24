@@ -1,0 +1,196 @@
+﻿@page "/admin/alianzas"
+@rendermode InteractiveServer
+@attribute [Authorize(Roles = Roles.Admin)]
+@using LaMontanona.Services
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.JSInterop
+@inject ApplicationDbContext Db
+@inject IFileStorageService Archivos
+@inject IJSRuntime JS
+@implements IDisposable
+
+<PageTitle>Alianzas · Panel · La Montañona</PageTitle>
+
+<PageBanner Migaja="Alianzas"
+            Titulo="Convenios y alianzas"
+            Subtitulo="Agrega cada aliado con su logo y descripción. Aparecen en la página Alianzas."
+            Imagen="/img/turismo-sendero.jpg" Posicion="center 60%" />
+
+<section class="s alt">
+    <div class="wrap">
+        <div class="ad-form">
+            <h2>@(editId == 0 ? "Nueva alianza" : "Editar alianza")</h2>
+            @if (ok is not null)
+            {
+                <p class="ad-msg ok" role="status">@ok</p>
+            }
+            @if (error is not null)
+            {
+                <p class="ad-msg er" role="alert">@error</p>
+            }
+            <div class="two">
+                <label class="fl"><span>Nombre</span><input maxlength="120" @bind="modelo.Nombre" /></label>
+                <label class="fl"><span>Orden (1 aparece primero)</span><input type="number" @bind="modelo.Orden" /></label>
+            </div>
+            <label class="fl"><span>Descripción del convenio</span><textarea maxlength="400" @bind="modelo.Descripcion"></textarea></label>
+            <label class="fl"><span>Logo (JPG, PNG o WEBP, máx. 5 MB)</span><input type="file" id="@InputId" accept="image/*" /></label>
+            <div id="@PreviewId"></div>
+            @if (subiendo)
+            {
+                <p class="meta">Subiendo logo…</p>
+            }
+            @if (editId != 0 && fotoRuta is null)
+            {
+                <p class="meta">Si no eliges otro logo, se conserva el actual.</p>
+            }
+            <label class="chk"><input type="checkbox" @bind="modelo.Publicada" /> Visible en el sitio</label>
+            <div class="btns">
+                <button type="button" class="boton prim" @onclick="Guardar" disabled="@subiendo">Guardar</button>
+                @if (editId != 0)
+                {
+                    <button type="button" class="boton cont" @onclick="Cancelar">Cancelar</button>
+                }
+            </div>
+        </div>
+
+        <div class="ad-lista">
+            @foreach (var a in items)
+            {
+                <div class="ad-item">
+                    <img class="lg-img" src="@(a.RutaLogo ?? "/img/Logo.jpg")" alt="" />
+                    <div>
+                        <b>@a.Nombre</b> @if (!a.Publicada) {
+                        <span class="ad-tag">Oculta</span>
+                    }
+                    <br />
+                    <small>Orden @a.Orden · @a.Descripcion</small>
+                </div>
+                <div class="acc">
+                    <button type="button" @onclick="() => Editar(a)">Editar</button>
+                    <button type="button" @onclick="() => Alternar(a)">@(a.Publicada ? "Ocultar" : "Mostrar")</button>
+                    @if (confirmarId == a.Id)
+                    {
+                        <button type="button" class="pel" @onclick="() => Eliminar(a)">¿Seguro? Eliminar</button>
+                    }
+                    else
+                    {
+                        <button type="button" class="pel" @onclick="() => confirmarId = a.Id">Eliminar</button>
+                    }
+                </div>
+            </div>
+        }
+        @if (items.Count == 0)
+        {
+            <p class="meta">Todavía no hay alianzas.</p>
+        }
+    </div>
+</div>
+</section>
+
+@code {
+    const string InputId = "fotoAlianza", PreviewId = "prevAlianza";
+    List<Alianza> items = new();
+    Alianza modelo = new();
+    int editId, confirmarId;
+    string? error, ok, fotoRuta;
+    bool subiendo;
+    DotNetObjectReference<AdminAlianzas>? self;
+
+    protected override async Task OnInitializedAsync() => await Cargar();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        self = DotNetObjectReference.Create(this);
+        await JS.InvokeVoidAsync("fotos.init", InputId, PreviewId, "contenido", self);
+    }
+
+    [JSInvokable]
+    public async Task FotoSubiendo() { subiendo = true; fotoRuta = null; error = null; await InvokeAsync(StateHasChanged); }
+
+    [JSInvokable]
+    public async Task FotoCambio(string? ruta, string? err)
+    {
+        subiendo = false; fotoRuta = ruta;
+        if (err is not null) error = err;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    async Task Cargar() => items = await Db.Alianzas.AsNoTracking().OrderBy(a => a.Orden).ThenBy(a => a.Nombre).ToListAsync();
+
+    async Task Limpiar()
+    {
+        modelo = new(); editId = 0; fotoRuta = null;
+        await JS.InvokeVoidAsync("fotos.reset", InputId, PreviewId);
+    }
+
+    async Task Editar(Alianza a)
+    {
+        ok = error = null;
+        modelo = new Alianza { Nombre = a.Nombre, Descripcion = a.Descripcion, Orden = a.Orden, Publicada = a.Publicada };
+        editId = a.Id; fotoRuta = null;
+        await JS.InvokeVoidAsync("fotos.reset", InputId, PreviewId);
+        await JS.InvokeVoidAsync("window.scrollTo", 0, 0);
+    }
+
+    async Task Cancelar() { ok = error = null; await Limpiar(); }
+
+    async Task Guardar()
+    {
+        ok = error = null;
+        if (subiendo) { error = "Espera a que termine de subir el logo."; return; }
+        if (string.IsNullOrWhiteSpace(modelo.Nombre)) { error = "Escribe el nombre de la alianza."; return; }
+        if (!string.IsNullOrEmpty(fotoRuta) && !Archivos.EsRutaValida(fotoRuta, "contenido")) { error = "El logo no es válido. Súbelo de nuevo."; return; }
+        try
+        {
+            if (editId == 0)
+            {
+                Db.Alianzas.Add(new Alianza
+                {
+                    Nombre = modelo.Nombre.Trim(),
+                    Descripcion = (modelo.Descripcion ?? "").Trim(),
+                    Orden = modelo.Orden,
+                    RutaLogo = fotoRuta,
+                    Publicada = modelo.Publicada
+                });
+            }
+            else
+            {
+                var a = await Db.Alianzas.FindAsync(editId);
+                if (a is null) { error = "No se encontró la alianza."; return; }
+                a.Nombre = modelo.Nombre.Trim(); a.Descripcion = (modelo.Descripcion ?? "").Trim();
+                a.Orden = modelo.Orden; a.Publicada = modelo.Publicada;
+                if (fotoRuta is not null) { Archivos.Eliminar(a.RutaLogo); a.RutaLogo = fotoRuta; }
+            }
+            await Db.SaveChangesAsync();
+            ok = editId == 0 ? "Alianza agregada." : "Cambios guardados.";
+            await Limpiar();
+        }
+        catch (Exception) { error = "No pudimos guardar. Revisa los datos e inténtalo de nuevo."; }
+        finally { Db.ChangeTracker.Clear(); }
+        await Cargar();
+    }
+
+    async Task Alternar(Alianza a)
+    {
+        var nuevo = !a.Publicada;
+        await Db.Alianzas.Where(x => x.Id == a.Id).ExecuteUpdateAsync(s => s.SetProperty(x => x.Publicada, nuevo));
+        await Cargar();
+    }
+
+    async Task Eliminar(Alianza a)
+    {
+        confirmarId = 0;
+        await Db.Alianzas.Where(x => x.Id == a.Id).ExecuteDeleteAsync();
+        Archivos.Eliminar(a.RutaLogo);
+        await Cargar();
+    }
+
+    public void Dispose() => self?.Dispose();
+}
+namespace LaMontanona.Components.Pages.Admin
+{
+    public class AdminAlianzas
+    {
+    }
+}

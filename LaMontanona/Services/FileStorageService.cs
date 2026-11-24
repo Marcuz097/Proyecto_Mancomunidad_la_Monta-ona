@@ -13,7 +13,7 @@ public interface IFileStorageService
 public partial class FileStorageService(IWebHostEnvironment env) : IFileStorageService
 {
     private static readonly string[] Extensiones = [".jpg", ".jpeg", ".png", ".webp"];
-    private static readonly string[] Subcarpetas = ["incidentes", "reportes"];
+    private static readonly string[] Subcarpetas = ["incidentes", "reportes", "contenido"];
     private const long MaxBytes = 5 * 1024 * 1024;
 
     [GeneratedRegex(@"^[0-9a-f]{32}\.(jpg|jpeg|png|webp)$")]
