@@ -2227,3 +2227,125 @@ html[data-theme=dark] .kp b {
         padding: 20px 18px
     }
 }
+
+
+/* Mejoras de compatibilidad y visualización del mapa */
+
+.mapa {
+    min-width: 0;
+    width: 100%;
+    min-height: 350px;
+    isolation: isolate;
+}
+
+.mapa-grid {
+    min-width: 0;
+}
+
+.mapa-lista {
+    min-width: 0;
+    scrollbar-width: thin;
+}
+
+.mi {
+    overflow-wrap: anywhere;
+}
+
+    .mi img {
+        border-radius: 8px;
+    }
+
+.mapa button,
+.mapa select,
+.mapa-lista button,
+.mapa-lista select {
+    font-family: inherit;
+}
+
+.leaflet-container {
+    font-family: Arial, sans-serif;
+    z-index: 1;
+}
+
+.leaflet-popup-content {
+    overflow-wrap: anywhere;
+}
+
+@media screen and (max-width: 768px) {
+    .mapa-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .mapa {
+        height: 400px;
+        min-height: 350px;
+    }
+
+    .mapa-lista {
+        max-height: 500px;
+    }
+
+    .mapa-top {
+        align-items: stretch;
+    }
+
+    .mapa-sel {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .mapa {
+        height: 350px;
+    }
+
+    .mapa-chips button {
+        padding: 7px 10px;
+        font-size: 0.8rem;
+    }
+
+    .mi {
+        padding: 10px;
+    }
+}
+
+/* Mapa de incidentes */
+
+#mapa {
+    width: 100%;
+    height: 580px;
+    min-height: 350px;
+    display: block;
+    position: relative;
+    z-index: 0;
+    overflow: hidden;
+    background: #e8eee9;
+}
+
+    #mapa .leaflet-container {
+        width: 100%;
+        height: 100%;
+        font-family: Arial, sans-serif;
+    }
+
+.leaflet-container {
+    z-index: 1;
+}
+
+.mapa-grid {
+    min-width: 0;
+}
+
+.mapa-lista {
+    min-width: 0;
+}
+
+@media (max-width: 768px) {
+    #mapa {
+        height: 420px;
+    }
+
+    .mapa-grid {
+        grid-template-columns: 1fr;
+    }
+}
