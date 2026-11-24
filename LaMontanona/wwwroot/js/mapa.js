@@ -48,7 +48,7 @@ window.mapaIncidentes = (function () {
 
         mapa = L.map(contenedor, {
             scrollWheelZoom: true
-        }).setView([14.15, -89.10], 10);
+        }).setView([14.13011, -88.91705], 12);
 
         L.tileLayer(
             "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
@@ -58,6 +58,16 @@ window.mapaIncidentes = (function () {
                     '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }
         ).addTo(mapa);
+
+        // Ubicación principal: La Montañona
+        const montanona = L.marker([14.13011, -88.91705])
+            .addTo(mapa);
+
+        montanona.bindPopup(
+            "<strong>La Montañona</strong><br>" +
+            "Área Natural Protegida<br>" +
+            "Chalatenango, El Salvador"
+        );
 
         // Leaflet necesita conocer las dimensiones reales
         setTimeout(function () {
@@ -215,14 +225,6 @@ window.mapaIncidentes = (function () {
 
             marcadores.push(marcador);
         });
-
-        if (marcadores.length > 0) {
-            const grupo = L.featureGroup(marcadores);
-            mapa.fitBounds(grupo.getBounds(), {
-                padding: [30, 30],
-                maxZoom: 15
-            });
-        }
     }
 
     function dibujarLista(datos) {
