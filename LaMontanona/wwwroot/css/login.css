@@ -393,3 +393,77 @@
         transition: none;
     }
 }
+
+
+/* ===== Registro ===== */
+.meter {
+    height: 6px;
+    margin: 10px 4px 8px;
+    border-radius: 6px;
+    background: rgba(255,255,255,.18);
+    overflow: hidden;
+}
+
+    .meter i {
+        display: block;
+        height: 100%;
+        width: 0;
+        border-radius: 6px;
+        transition: width .3s, background .3s;
+    }
+
+.reglas {
+    list-style: none;
+    margin: 0 0 4px 4px;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    font-size: .76rem;
+    color: rgba(255,255,255,.7);
+}
+
+    .reglas li::before {
+        content: "○";
+        margin-right: 5px;
+        color: rgba(255,255,255,.55);
+    }
+
+    .reglas li.ok {
+        color: #c9f0a0;
+    }
+
+        .reglas li.ok::before {
+            content: "✓";
+            color: #9ad121;
+            font-weight: 700;
+        }
+
+.field-note {
+    display: block;
+    margin: 5px 0 0 4px;
+    font-size: .8rem;
+    color: #ffd2a1;
+}
+
+    .field-note.ok {
+        color: #c9f0a0;
+    }
+
+.reg-nota {
+    margin: 14px 4px 0;
+    text-align: center;
+    font-size: .76rem;
+    line-height: 1.45;
+    color: rgba(255,255,255,.7);
+}
+
+.remember span {
+    line-height: 1.35;
+}
+
+/* corrige el ancho de la tarjeta en celulares (aplica también al login) */
+.glass {
+    box-sizing: border-box;
+    width: min(484px, 100%);
+}

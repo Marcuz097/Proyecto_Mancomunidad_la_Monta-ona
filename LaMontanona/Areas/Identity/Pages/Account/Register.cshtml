@@ -1,0 +1,147 @@
+﻿@page
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@model LaMontanona.Areas.Identity.Pages.Account.RegisterModel
+@{
+    Layout = null;
+    bool hayGoogle = Model.ExternalLogins.Any(p => p.Name == "Google");
+    bool hayApple = Model.ExternalLogins.Any(p => p.Name == "Apple");
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Crear cuenta · Mancomunidad La Montañona</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@@600&family=Public+Sans:wght@@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+</head>
+<body class="login-body">
+    <main class="login-stage">
+
+        <section class="glass" aria-labelledby="reg-title">
+
+            <a class="login-logo" href="/" aria-label="Volver al inicio · La Montañona Mancomunidad">
+                <svg viewBox="0 0 380 155" role="img" aria-hidden="true">
+                    <defs>
+                        <linearGradient id="colinaGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#174d1b" />
+                            <stop offset="50%" stop-color="#489e2c" />
+                            <stop offset="100%" stop-color="#9ad121" />
+                        </linearGradient>
+                    </defs>
+                    <rect x="115" y="72" width="4.5" height="18" fill="#2b1d0e" />
+                    <rect x="138" y="72" width="4.5" height="16" fill="#3d2914" />
+                    <rect x="161" y="72" width="4.5" height="14" fill="#593c1d" />
+                    <rect x="184" y="72" width="4.5" height="13" fill="#785026" />
+                    <rect x="207" y="72" width="4.5" height="14" fill="#946431" />
+                    <rect x="230" y="72" width="4.5" height="16" fill="#ad773e" />
+                    <rect x="253" y="72" width="4.5" height="18" fill="#c78d4e" />
+                    <path d="M117 10 C102 42, 100 76, 117 76 C134 76, 132 42, 117 10 Z" fill="#0d3b14" />
+                    <path d="M140 10 C125 42, 123 76, 140 76 C157 76, 155 42, 140 10 Z" fill="#1e5c1f" />
+                    <path d="M163 10 C148 42, 146 76, 163 76 C180 76, 178 42, 163 10 Z" fill="#328228" />
+                    <path d="M186 10 C171 42, 169 76, 186 76 C203 76, 201 42, 186 10 Z" fill="#4aa32e" />
+                    <path d="M209 10 C194 42, 192 76, 209 76 C226 76, 224 42, 209 10 Z" fill="#73bd29" />
+                    <path d="M232 10 C217 42, 215 76, 232 76 C249 76, 247 42, 232 10 Z" fill="#9ed422" />
+                    <path d="M255 10 C240 42, 238 76, 255 76 C272 76, 270 42, 255 10 Z" fill="#c8e619" />
+                    <path d="M72 102 Q186 72 300 102 Q186 83 72 102 Z" fill="url(#colinaGrad)" />
+                    <text x="190" y="128" text-anchor="middle" fill="currentColor" font-family="'Public Sans','Segoe UI',Arial,sans-serif" font-weight="300" font-size="25" letter-spacing="2.5"><tspan font-size="30">L</tspan>A MONTAÑONA</text>
+                    <text x="190" y="146" text-anchor="middle" fill="currentColor" font-family="'Fraunces',Georgia,serif" font-weight="600" font-size="11.5" letter-spacing="5.8" opacity="0.9">MANCOMUNIDAD</text>
+                </svg>
+            </a>
+
+            <h1 id="reg-title">Crear cuenta</h1>
+            <p class="login-sub">Únete a la plataforma de la Mancomunidad</p>
+
+            <form method="post" class="login-form" id="formRegistro" novalidate>
+                <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
+
+                <div asp-validation-summary="ModelOnly" class="login-alert" role="alert"></div>
+
+                <div class="field">
+                    <label for="Input_Nombre">Nombre completo</label>
+                    <div class="control">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>
+                        <input asp-for="Input.Nombre" type="text" autocomplete="name" placeholder="Nombre y apellido" autofocus />
+                    </div>
+                    <span asp-validation-for="Input.Nombre" class="field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label for="Input_Email">Correo electrónico</label>
+                    <div class="control">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Zm0 1 8 6 8-6" /></svg>
+                        <input asp-for="Input.Email" type="email" autocomplete="username" placeholder="correo@@ejemplo.com" />
+                    </div>
+                    <span asp-validation-for="Input.Email" class="field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label for="Input_Password">Contraseña</label>
+                    <div class="control">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>
+                        <input asp-for="Input.Password" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres" />
+                        <button type="button" class="toggle" data-ver="Input_Password" aria-label="Mostrar contraseña" aria-pressed="false">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" /></svg>
+                        </button>
+                    </div>
+                    <div class="meter" aria-hidden="true"><i id="medidor"></i></div>
+                    <ul class="reglas" id="reglas">
+                        <li data-r="len">8 o más caracteres</li>
+                        <li data-r="up">Una mayúscula</li>
+                        <li data-r="low">Una minúscula</li>
+                        <li data-r="num">Un número</li>
+                        <li data-r="sym">Un símbolo (#, !, $…)</li>
+                    </ul>
+                    <span asp-validation-for="Input.Password" class="field-error"></span>
+                </div>
+
+                <div class="field">
+                    <label for="Input_ConfirmPassword">Confirmar contraseña</label>
+                    <div class="control">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8.2 7 10 4-1.8 7-5.5 7-10V6l-7-3Z" /><path d="m9 12 2 2 4-4" /></svg>
+                        <input asp-for="Input.ConfirmPassword" type="password" autocomplete="new-password" placeholder="Repite la contraseña" />
+                        <button type="button" class="toggle" data-ver="Input_ConfirmPassword" aria-label="Mostrar contraseña" aria-pressed="false">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z" /><circle cx="12" cy="12" r="3" /></svg>
+                        </button>
+                    </div>
+                    <span class="field-note" id="coincide" hidden></span>
+                    <span asp-validation-for="Input.ConfirmPassword" class="field-error"></span>
+                </div>
+
+                <label class="remember">
+                    <input asp-for="Input.Acepto" type="checkbox" />
+                    <span>Acepto el uso de mis datos para la gestión de la Mancomunidad</span>
+                </label>
+                <span asp-validation-for="Input.Acepto" class="field-error" style="margin:-10px 0 12px 4px"></span>
+
+                <button type="submit" class="login-btn" id="btnRegistro">
+                    <span>Crear mi cuenta</span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                </button>
+
+                <p class="reg-nota">Tu cuenta se crea sin permisos especiales. Si eres guardabosque o personal de la Mancomunidad, un administrador te asignará tu rol.</p>
+            </form>
+
+            <div class="divider"><span>o regístrate con</span></div>
+
+            <form method="post" class="social" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl">
+                <button type="submit" name="provider" value="Google" disabled="@(!hayGoogle)" title="@(hayGoogle ? "Continuar con Google" : "Disponible cuando se configure el proveedor")">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.5 12.27c0-.85-.08-1.67-.22-2.45H12v4.64h6.46a5.52 5.52 0 0 1-2.4 3.62v3h3.88c2.27-2.09 3.56-5.17 3.56-8.81z" /><path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.94-2.91l-3.88-3c-1.08.72-2.45 1.15-4.06 1.15-3.12 0-5.77-2.11-6.71-4.95H1.28v3.1A12 12 0 0 0 12 24z" /><path fill="#FBBC05" d="M5.29 14.29a7.2 7.2 0 0 1 0-4.58v-3.1H1.28a12 12 0 0 0 0 10.78l4.01-3.1z" /><path fill="#EA4335" d="M12 4.75c1.76 0 3.34.61 4.59 1.8l3.44-3.44C17.95 1.19 15.23 0 12 0A12 12 0 0 0 1.28 6.61l4.01 3.1C6.23 6.86 8.88 4.75 12 4.75z" /></svg>
+                    <span>Google</span>
+                </button>
+                <button type="submit" name="provider" value="Apple" disabled="@(!hayApple)" title="@(hayApple ? "Continuar con Apple" : "Disponible cuando se configure el proveedor")">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" /></svg>
+                    <span>Apple</span>
+                </button>
+            </form>
+
+            <p class="login-help">¿Ya tienes cuenta? <a href="/Identity/Account/Login?returnUrl=@Uri.EscapeDataString(Model.ReturnUrl ?? "/")">Iniciar sesión</a></p>
+            <a class="login-back" href="/">← Volver al sitio</a>
+        </section>
+
+        <p class="login-copy">© 2026 Mancomunidad La Montañona</p>
+    </main>
+    <script src="~/js/register.js" asp-append-version="true"></script>
+</body>
+</html>
