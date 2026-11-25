@@ -17,6 +17,7 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     public DbSet<Actividad> Actividades => Set<Actividad>();
     public DbSet<Noticia> Noticias => Set<Noticia>();
     public DbSet<Alianza> Alianzas => Set<Alianza>();
+    public DbSet<Notificacion> Notificaciones => Set<Notificacion>();
     protected override void OnModelCreating(ModelBuilder b)
     {
         base.OnModelCreating(b);

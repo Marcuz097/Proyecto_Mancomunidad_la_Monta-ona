@@ -2371,3 +2371,320 @@ h2:focus,
 [tabindex="-1"]:focus {
     outline: none;
 }
+
+/* Centro de notificaciones */
+
+.notificaciones {
+    max-width: 950px;
+}
+
+.notificaciones-cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 25px;
+}
+
+    .notificaciones-cabecera h2 {
+        margin-bottom: 8px;
+    }
+
+    .notificaciones-cabecera p {
+        color: var(--suave);
+        margin: 0;
+    }
+
+.notificaciones-resumen {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    margin-bottom: 25px;
+}
+
+.noti-resumen-card {
+    background: var(--card);
+    border: 1px solid var(--linea);
+    border-radius: 15px;
+    padding: 22px;
+}
+
+    .noti-resumen-card span {
+        display: block;
+        color: var(--suave);
+        font-size: .9rem;
+    }
+
+    .noti-resumen-card strong {
+        display: block;
+        color: var(--verde);
+        font-size: 2rem;
+        margin-top: 5px;
+    }
+
+.noti-lista {
+    display: grid;
+    gap: 14px;
+}
+
+.noti-item {
+    display: flex;
+    gap: 16px;
+    padding: 22px;
+    background: var(--card);
+    border: 1px solid var(--linea);
+    border-radius: 15px;
+    transition: border-color .2s, transform .2s;
+}
+
+    .noti-item:hover {
+        border-color: var(--verde-2);
+        transform: translateY(-2px);
+    }
+
+    .noti-item.no-leida {
+        border-left: 5px solid var(--verde-2);
+    }
+
+    .noti-item.leida {
+        opacity: .78;
+    }
+
+.noti-icono {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--hoja);
+    font-size: 1.3rem;
+}
+
+.noti-contenido {
+    flex: 1;
+    min-width: 0;
+}
+
+.noti-titulo-fila {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+    .noti-titulo-fila h3 {
+        font-size: 1.15rem;
+    }
+
+.noti-contenido p {
+    color: var(--suave);
+    margin: 9px 0;
+}
+
+.noti-contenido small {
+    color: var(--suave);
+    font-size: .8rem;
+}
+
+.noti-pendiente {
+    background: var(--hoja);
+    color: var(--verde);
+    border-radius: 20px;
+    padding: 4px 11px;
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+.noti-acciones {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+}
+
+.noti-enlace,
+.noti-marcar {
+    color: var(--verde);
+    font-weight: 600;
+    font-size: .88rem;
+}
+
+.noti-marcar {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+    .noti-enlace:hover,
+    .noti-marcar:hover {
+        text-decoration: underline;
+    }
+
+.noti-vacio {
+    background: var(--card);
+    border: 1px dashed var(--linea);
+    border-radius: 16px;
+    padding: 45px 20px;
+    text-align: center;
+    color: var(--suave);
+}
+
+    .noti-vacio h3 {
+        color: var(--tinta);
+        margin: 10px 0;
+    }
+
+.noti-vacio-icono {
+    font-size: 2.5rem;
+}
+
+@media (max-width: 600px) {
+    .notificaciones-resumen {
+        grid-template-columns: 1fr;
+    }
+
+    .noti-item {
+        padding: 16px;
+    }
+
+    .noti-icono {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+
+/* ==========================================
+   AJUSTE DE LA BARRA DE NAVEGACIÓN
+   LA MONTAÑONA
+========================================== */
+
+/* Computadoras: todos los elementos en una fila */
+@media (min-width: 1181px) {
+
+    .cab .wrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        height: 84px;
+    }
+
+    .marca {
+        width: 135px;
+        flex: 0 0 135px;
+    }
+
+    nav.menu {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+        flex: 1;
+        min-width: 0;
+        gap: 2px;
+        font-size: .86rem;
+    }
+
+        nav.menu > a,
+        nav.menu > form {
+            flex: 0 0 auto;
+            white-space: nowrap;
+        }
+
+        nav.menu a,
+        nav.menu button.acc {
+            padding: 7px 8px;
+        }
+
+            nav.menu a.den {
+                padding: 9px 11px;
+                margin-left: 3px;
+            }
+
+        nav.menu form {
+            display: flex;
+            align-items: center;
+        }
+
+        nav.menu a.nav-noti {
+            color: var(--verde);
+            font-weight: 600;
+        }
+}
+
+/* Tablets y pantallas pequeñas: menú desplegable */
+@media (max-width: 1180px) {
+
+    .cab .wrap {
+        position: relative;
+        height: 76px;
+    }
+
+    .marca {
+        width: 135px;
+    }
+
+    .burger {
+        display: grid;
+        margin-left: auto;
+    }
+
+    nav.menu {
+        display: none;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 100%;
+        z-index: 100;
+        background: var(--card);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 5px;
+        padding: 16px 24px 22px;
+        border-bottom: 1px solid var(--linea);
+        box-shadow: 0 20px 30px rgba(14,47,58,.15);
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+    }
+
+        nav.menu.open {
+            display: flex;
+        }
+
+        nav.menu > a {
+            display: block;
+            width: 100%;
+            padding: 11px 12px;
+            white-space: normal;
+        }
+
+        nav.menu a.active::after {
+            display: none;
+        }
+
+        nav.menu form {
+            display: block;
+            width: 100%;
+            margin: 0;
+        }
+
+        nav.menu a.acc,
+        nav.menu button.acc,
+        nav.menu a.den {
+            display: block;
+            width: 100%;
+            margin: 5px 0 0;
+            text-align: center;
+        }
+
+        nav.menu a.nav-noti {
+            color: var(--verde);
+            font-weight: 600;
+        }
+}
