@@ -1,36 +1,50 @@
-﻿using System.Globalization;
+﻿
+using System.Globalization;
 using LaMontanona.Data;
 using LaMontanona.Models;
 using LaMontanona.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+
 namespace LaMontanona.Endpoints;
 
 public record EstadoDto(int Estado);
 
-/// <summary>
-/// Denuncias reales: las recibe el formulario público de Contacto, el equipo las ve en el mapa
-/// y el administrador cambia su estado. La persona consulta su caso con el código de seguimiento.
-/// </summary>
 public static class IncidenteEndpoints
 {
-    static readonly string[] Tipos =
-        ["Incendio o quema", "Tala ilegal", "Caza o tráfico de fauna", "Contaminación de agua", "Otro"];
+    private static readonly string[] Tipos =
+    [
+        "Incendio o quema",
+        "Tala ilegal",
+        "Caza o tráfico de fauna",
+        "Contaminación de agua",
+        "Otro"
+    ];
 
     public static void MapIncidenteEndpoints(this IEndpointRouteBuilder app)
     {
-        var g = app.MapGroup("/api/incidentes").DisableAntiforgery();
+        var g = app.MapGroup("/api/incidentes")
+            .DisableAntiforgery();
 
-        g.MapPost("/", Crear).AllowAnonymous()
-         .WithMetadata(new RequestSizeLimitAttribute(6 * 1024 * 1024));
-        g.MapGet("/seguimiento/{codigo}", Seguimiento).AllowAnonymous();
-        g.MapGet("/", Listar).RequireAuthorization(p => p.RequireRole(Roles.Admin, Roles.Guardabosque));
-        g.MapPut("/{id:int}/estado", CambiarEstado).RequireAuthorization(p => p.RequireRole(Roles.Admin));
+        g.MapPost("/", Crear)
+            .AllowAnonymous()
+            .WithMetadata(new RequestSizeLimitAttribute(6 * 1024 * 1024));
+
+        g.MapGet("/seguimiento/{codigo}", Seguimiento)
+            .AllowAnonymous();
+
+        g.MapGet("/", Listar)
+            .RequireAuthorization(p =>
+                p.RequireRole(Roles.Admin, Roles.Guardabosque));
+
+        g.MapPut("/{id:int}/estado", CambiarEstado)
+            .RequireAuthorization(p =>
+                p.RequireRole(Roles.Admin));
     }
 
-    static string Codigo(int id) => $"MLM-{id:D5}";
+    private static string Codigo(int id) => $"MLM-{id:D5}";
 
-    static string EstadoTexto(EstadoIncidente e) => e switch
+    private static string EstadoTexto(EstadoIncidente estado) => estado switch
     {
         EstadoIncidente.Recibido => "Recibido",
         EstadoIncidente.EnRevision => "En revisión",
@@ -38,67 +52,248 @@ public static class IncidenteEndpoints
         _ => "Cerrado"
     };
 
-    static double? Coord(string s, double min, double max) =>
-        double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out var v) && v >= min && v <= max ? v : null;
+    private static string Texto(IFormCollection form, string campo)
+        => form[campo].ToString().Trim();
 
-    static string? NullSi(string s) => s.Length == 0 ? null : s;
+    private static string? TextoOpcional(string valor)
+        => string.IsNullOrWhiteSpace(valor) ? null : valor.Trim();
 
-    static async Task<IResult> Crear(HttpRequest req, ApplicationDbContext db, IFileStorageService archivos, CancellationToken ct)
+    private static double? LeerCoordenada(
+        string valor,
+        double minimo,
+        double maximo)
     {
-        if (!req.HasFormContentType) return Results.BadRequest(new { error = "Solicitud no válida." });
-        var f = await req.ReadFormAsync(ct);
+        if (string.IsNullOrWhiteSpace(valor))
+            return null;
 
-        string Txt(string k, int max)
+        if (!double.TryParse(
+            valor.Trim(),
+            NumberStyles.Float,
+            CultureInfo.InvariantCulture,
+            out double numero))
+            return null;
+
+        if (!double.IsFinite(numero) ||
+            numero < minimo ||
+            numero > maximo)
+            return null;
+
+        return numero;
+    }
+
+    private static async Task<IResult> Crear(
+        HttpRequest req,
+        ApplicationDbContext db,
+        IFileStorageService archivos,
+        ILogger<IncidenteEndpointsLog> logger,
+        CancellationToken ct)
+    {
+        if (!req.HasFormContentType)
         {
-            var s = f[k].ToString().Trim();
-            return s.Length > max ? s[..max] : s;
+            return Results.BadRequest(new
+            {
+                error = "El formulario no se recibió correctamente."
+            });
         }
 
-        var tipo = Txt("tipo", 80);
-        var descripcion = Txt("descripcion", 2000);
-        var ubicacion = Txt("ubicacion", 300);
-        if (!Tipos.Contains(tipo)) return Results.BadRequest(new { error = "Elige el tipo de incidente." });
-        if (descripcion.Length < 5 || ubicacion.Length < 2)
-            return Results.BadRequest(new { error = "Completa la ubicación y cuéntanos qué está pasando." });
+        IFormCollection form;
 
-        var anonimo = f["anonimo"].ToString() is "on" or "true";
+        try
+        {
+            form = await req.ReadFormAsync(ct);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "No se pudo leer el formulario de denuncia.");
 
-        string? ruta = null;
-        try { ruta = await archivos.GuardarFotoIncidenteAsync(f.Files.GetFile("foto"), ct); }
-        catch (InvalidOperationException ex) { return Results.BadRequest(new { error = ex.Message }); }
+            return Results.BadRequest(new
+            {
+                error = "No se pudieron leer los datos enviados."
+            });
+        }
 
-        var inc = new IncidenteDenuncia
+        var tipo = Texto(form, "tipo");
+        var descripcion = Texto(form, "descripcion");
+        var ubicacion = Texto(form, "ubicacion");
+
+        if (!Tipos.Contains(tipo))
+        {
+            return Results.BadRequest(new
+            {
+                error = "Selecciona un tipo de incidente válido."
+            });
+        }
+
+        if (descripcion.Length < 5 || descripcion.Length > 2000)
+        {
+            return Results.BadRequest(new
+            {
+                error = "La descripción debe tener entre 5 y 2000 caracteres."
+            });
+        }
+
+        if (ubicacion.Length < 2 || ubicacion.Length > 300)
+        {
+            return Results.BadRequest(new
+            {
+                error = "Escribe una ubicación válida."
+            });
+        }
+
+        var latitudTexto = Texto(form, "lat");
+        var longitudTexto = Texto(form, "lng");
+
+        double? latitud = LeerCoordenada(latitudTexto, -90, 90);
+        double? longitud = LeerCoordenada(longitudTexto, -180, 180);
+
+        if (latitudTexto.Length > 0 && latitud is null)
+        {
+            return Results.BadRequest(new
+            {
+                error = "La latitud no es válida."
+            });
+        }
+
+        if (longitudTexto.Length > 0 && longitud is null)
+        {
+            return Results.BadRequest(new
+            {
+                error = "La longitud no es válida."
+            });
+        }
+
+        if (latitud.HasValue != longitud.HasValue)
+        {
+            return Results.BadRequest(new
+            {
+                error = "Debes enviar latitud y longitud juntas."
+            });
+        }
+
+        var anonimo =
+            Texto(form, "anonimo").Equals("on", StringComparison.OrdinalIgnoreCase) ||
+            Texto(form, "anonimo").Equals("true", StringComparison.OrdinalIgnoreCase);
+
+        string? rutaFoto = null;
+
+        try
+        {
+            var foto = form.Files.GetFile("foto");
+
+            if (foto is not null && foto.Length > 0)
+            {
+                rutaFoto = await archivos.GuardarFotoIncidenteAsync(foto, ct);
+            }
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Results.BadRequest(new { error = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error al guardar fotografía de denuncia.");
+
+            return Results.Problem(
+                "No se pudo guardar la fotografía.",
+                statusCode: 500);
+        }
+
+        var incidente = new IncidenteDenuncia
         {
             Tipo = tipo,
             Descripcion = descripcion,
             Ubicacion = ubicacion,
-            Latitud = Coord(f["lat"].ToString(), -90, 90),
-            Longitud = Coord(f["lng"].ToString(), -180, 180),
-            RutaFoto = ruta,
-            NombreDenunciante = anonimo ? null : NullSi(Txt("nombre", 120)),
-            Contacto = anonimo ? null : NullSi(Txt("contacto", 120))
+            Latitud = latitud,
+            Longitud = longitud,
+            RutaFoto = rutaFoto,
+            NombreDenunciante = anonimo
+                ? null
+                : TextoOpcional(Texto(form, "nombre")),
+            Contacto = anonimo
+                ? null
+                : TextoOpcional(Texto(form, "contacto")),
+            Estado = EstadoIncidente.Recibido,
+            FechaReporte = DateTime.UtcNow
         };
-        db.Incidentes.Add(inc);
-        await db.SaveChangesAsync(ct);
-        return Results.Ok(new { codigo = Codigo(inc.Id) });
+
+        try
+        {
+            db.Incidentes.Add(incidente);
+
+            await db.SaveChangesAsync(ct);
+
+            logger.LogInformation(
+                "Denuncia guardada correctamente. ID: {Id}",
+                incidente.Id);
+
+            return Results.Ok(new
+            {
+                codigo = Codigo(incidente.Id),
+                mensaje = "La denuncia se guardó correctamente."
+            });
+        }
+        catch (DbUpdateException ex)
+        {
+            logger.LogError(
+                ex,
+                "Error de SQL Server al guardar una denuncia.");
+
+            if (rutaFoto is not null)
+                archivos.Eliminar(rutaFoto);
+
+            return Results.Problem(
+                "SQL Server no pudo guardar la denuncia. Revisa el registro de errores del servidor.",
+                statusCode: 500);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error inesperado al guardar denuncia.");
+
+            if (rutaFoto is not null)
+                archivos.Eliminar(rutaFoto);
+
+            return Results.Problem(
+                "Ocurrió un error inesperado al guardar la denuncia.",
+                statusCode: 500);
+        }
     }
 
-    // Público: solo revela tipo, estado y fecha (nada de ubicación ni datos personales)
-    static async Task<IResult> Seguimiento(string codigo, ApplicationDbContext db, CancellationToken ct)
+    private static async Task<IResult> Seguimiento(
+        string codigo,
+        ApplicationDbContext db,
+        CancellationToken ct)
     {
         codigo = codigo.Trim();
-        if (!codigo.StartsWith("MLM-", StringComparison.OrdinalIgnoreCase) || !int.TryParse(codigo[4..], out var id))
+
+        if (!codigo.StartsWith("MLM-", StringComparison.OrdinalIgnoreCase) ||
+            !int.TryParse(codigo[4..], out var id))
             return Results.NotFound();
-        var i = await db.Incidentes.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id, ct);
-        return i is null
-            ? Results.NotFound()
-            : Results.Ok(new { tipo = i.Tipo, estado = EstadoTexto(i.Estado), fecha = i.FechaReporte });
+
+        var incidente = await db.Incidentes
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == id, ct);
+
+        if (incidente is null)
+            return Results.NotFound();
+
+        return Results.Ok(new
+        {
+            tipo = incidente.Tipo,
+            estado = EstadoTexto(incidente.Estado),
+            fecha = incidente.FechaReporte
+        });
     }
 
-    static async Task<IResult> Listar(ApplicationDbContext db, CancellationToken ct)
+    private static async Task<IResult> Listar(
+        ApplicationDbContext db,
+        CancellationToken ct)
     {
-        var lista = await db.Incidentes.AsNoTracking()
-            .OrderByDescending(i => i.FechaReporte).Take(500).ToListAsync(ct);
+        var lista = await db.Incidentes
+            .AsNoTracking()
+            .OrderByDescending(i => i.FechaReporte)
+            .Take(500)
+            .ToListAsync(ct);
+
         return Results.Ok(lista.Select(i => new
         {
             i.Id,
@@ -115,12 +310,33 @@ public static class IncidenteEndpoints
         }));
     }
 
-    static async Task<IResult> CambiarEstado(int id, EstadoDto dto, ApplicationDbContext db, CancellationToken ct)
+    private static async Task<IResult> CambiarEstado(
+        int id,
+        EstadoDto dto,
+        ApplicationDbContext db,
+        CancellationToken ct)
     {
         if (!Enum.IsDefined(typeof(EstadoIncidente), dto.Estado))
-            return Results.BadRequest(new { error = "Estado no válido." });
-        var n = await db.Incidentes.Where(x => x.Id == id)
-            .ExecuteUpdateAsync(s => s.SetProperty(x => x.Estado, (EstadoIncidente)dto.Estado), ct);
-        return n == 0 ? Results.NotFound() : Results.NoContent();
+        {
+            return Results.BadRequest(new
+            {
+                error = "Estado no válido."
+            });
+        }
+
+        var cantidad = await db.Incidentes
+            .Where(x => x.Id == id)
+            .ExecuteUpdateAsync(
+                s => s.SetProperty(
+                    x => x.Estado,
+                    (EstadoIncidente)dto.Estado),
+                ct);
+
+        return cantidad == 0
+            ? Results.NotFound()
+            : Results.NoContent();
     }
 }
+
+// Categoría para los registros del endpoint.
+public sealed class IncidenteEndpointsLog;
