@@ -1,6 +1,7 @@
 /* site.js · Mancomunidad La Montañona
    Funciona con la navegación mejorada de Blazor: los eventos van delegados al
    document y lo que depende de la página se vuelve a iniciar en cada carga. */
+
 (() => {
     const $ = (s, r = document) => r.querySelector(s);
     const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -127,38 +128,330 @@
     }
 
     // Denuncia REAL: se guarda en la base y devuelve un código de seguimiento
+
     function initDenuncia() {
-        const form = $('#fi'); if (!form || form.dataset.init) return; form.dataset.init = '1';
-        const ok = $('#okd'), err = $('#errd'), btn = $('#btnDen');
-        $('#foto')?.addEventListener('change', e => { const f = e.target.files[0]; if (f) { $('#vprev').src = URL.createObjectURL(f); $('#vprev').hidden = false; } });
-        $('#anon')?.addEventListener('change', e => { $('#datosDen').hidden = e.target.checked; });
-        $('#gps')?.addEventListener('click', () => {
-            const m = $('#gm'); m.textContent = 'Buscando tu ubicación…';
-            if (!navigator.geolocation) { m.textContent = 'Tu navegador no permite ubicación. Escríbela a mano.'; return; }
+        // Los eventos se conectan una sola vez al documento.
+        // Así funcionan aunque Blazor renderice el formulario después.
+        if (document.documentElement.dataset.denunciaEvents === '1') return;
+        document.documentElement.dataset.denunciaEvents = '1';
+
+        // Vista previa y anonimato
+        document.addEventListener('change', e => {
+            if (e.target.matches('#foto')) {
+                const archivo = e.target.files?.[0];
+                const vista = document.querySelector('#vprev');
+
+                if (archivo && vista) {
+                    vista.src = URL.createObjectURL(archivo);
+                    vista.hidden = false;
+                }
+            }
+
+            if (e.target.matches('#anon')) {
+                const datos = document.querySelector('#datosDen');
+                if (datos) datos.hidden = e.target.checked;
+            }
+        });
+
+        // Botón GPS
+        document.addEventListener('click', e => {
+            const boton = e.target.closest('#gps');
+            if (!boton) return;
+
+            e.preventDefault();
+
+            const mensaje = document.querySelector('#gm');
+            const ubicacion = document.querySelector('#ubi');
+            const latitud = document.querySelector('#lat');
+            const longitud = document.querySelector('#lng');
+
+            if (!mensaje || !ubicacion || !latitud || !longitud) {
+                console.error('No se encontraron los campos GPS del formulario.');
+                return;
+            }
+
+            console.log('Botón GPS detectado');
+            mensaje.textContent = 'Solicitando ubicación…';
+
+            if (!window.isSecureContext) {
+                mensaje.textContent =
+                    'La ubicación requiere HTTPS o localhost. Abre el sitio desde http://localhost.';
+                return;
+            }
+
+            if (!navigator.geolocation) {
+                mensaje.textContent =
+                    'Este navegador no permite obtener la ubicación.';
+                return;
+            }
+
+            boton.disabled = true;
+
             navigator.geolocation.getCurrentPosition(
-                g => {
-                    $('#lat').value = g.coords.latitude.toFixed(6); $('#lng').value = g.coords.longitude.toFixed(6);
-                    if (!$('#ubi').value.trim()) $('#ubi').value = g.coords.latitude.toFixed(5) + ', ' + g.coords.longitude.toFixed(5);
-                    m.textContent = 'Ubicación añadida.';
+                posicion => {
+                    const lat = posicion.coords.latitude;
+                    const lng = posicion.coords.longitude;
+
+                    latitud.value = lat.toFixed(6);
+                    longitud.value = lng.toFixed(6);
+
+                    if (!ubicacion.value.trim()) {
+                        ubicacion.value = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+                    }
+
+                    mensaje.textContent = 'Ubicación añadida correctamente.';
+                    boton.disabled = false;
                 },
-                () => { m.textContent = 'No pudimos obtenerla. Escríbela a mano.'; });
+                error => {
+                    console.error('Error GPS:', error);
+
+                    const mensajes = {
+                        1: 'Permiso de ubicación denegado. Revisa los permisos del navegador.',
+                        2: 'No se pudo determinar tu ubicación.',
+                        3: 'La búsqueda de ubicación tardó demasiado.'
+                    };
+
+                    mensaje.textContent =
+                        mensajes[error.code] || 'No se pudo obtener la ubicación.';
+
+                    boton.disabled = false;
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 20000,
+                    maximumAge: 0
+                }
+            );
         });
-        form.addEventListener('submit', async e => {
-            e.preventDefault(); err.hidden = true;
-            // si escribió coordenadas a mano ("13.98, -89.01") también las usamos
-            const mc = $('#ubi').value.match(/^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/);
-            if (!$('#lat').value && mc) { $('#lat').value = mc[1]; $('#lng').value = mc[2]; }
-            const texto = btn.textContent; btn.disabled = true; btn.textContent = 'Enviando…';
+
+        // Si el usuario modifica la ubicación manualmente,
+        // eliminamos las coordenadas anteriores.
+        document.addEventListener('input', e => {
+            if (e.target.matches('#ubi')) {
+                const lat = document.querySelector('#lat');
+                const lng = document.querySelector('#lng');
+
+                if (lat) lat.value = '';
+                if (lng) lng.value = '';
+            }
+        });
+
+        // Envío de denuncia
+        document.addEventListener('submit', async e => {
+            const form = e.target;
+
+            if (!form.matches('#fi')) return;
+
+            e.preventDefault();
+
+            const error = document.querySelector('#errd');
+            const boton = document.querySelector('#btnDen');
+            const exito = document.querySelector('#okd');
+
+            if (!error || !boton || !exito) {
+                console.error('Faltan elementos del formulario de denuncia.');
+                return;
+            }
+
+            error.hidden = true;
+            error.textContent = '';
+
+            // Reconocer coordenadas escritas manualmente.
+            const ubicacion = document.querySelector('#ubi');
+            const lat = document.querySelector('#lat');
+            const lng = document.querySelector('#lng');
+
+            const coincidencia = ubicacion.value.match(
+                /^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/
+            );
+
+            if (!lat.value && coincidencia) {
+                lat.value = coincidencia[1];
+                lng.value = coincidencia[2];
+            }
+
+            const textoOriginal = boton.textContent;
+            boton.disabled = true;
+            boton.textContent = 'Enviando…';
+
             try {
-                const r = await fetch('/api/incidentes', { method: 'POST', body: new FormData(form) });
-                const j = await r.json().catch(() => null);
-                if (!r.ok || !j?.codigo) throw new Error(j?.error || 'No pudimos enviar la denuncia. Inténtalo de nuevo.');
-                $('#codd').textContent = j.codigo; form.hidden = true; ok.hidden = false;
-                ok.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            } catch (x) { err.textContent = x.message; err.hidden = false; }
-            finally { btn.disabled = false; btn.textContent = texto; }
+                console.log('Enviando denuncia al servidor…');
+
+                const respuesta = await fetch('/api/incidentes/', {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const textoRespuesta = await respuesta.text();
+
+                console.log('Estado HTTP:', respuesta.status);
+                console.log('Respuesta del servidor:', textoRespuesta);
+
+                let resultado = {};
+
+                try {
+                    resultado = textoRespuesta
+                        ? JSON.parse(textoRespuesta)
+                        : {};
+                } catch {
+                    throw new Error(
+                        `El servidor respondió con un formato inesperado. HTTP ${respuesta.status}.`
+                    );
+                }
+
+                if (!respuesta.ok) {
+                    throw new Error(
+                        resultado.error ||
+                        resultado.detail ||
+                        `Error del servidor: ${respuesta.status}`
+                    );
+                }
+
+                if (!resultado.codigo) {
+                    throw new Error(
+                        'El servidor respondió, pero no devolvió el código de seguimiento.'
+                    );
+                }
+
+                document.querySelector('#codd').textContent = resultado.codigo;
+
+                form.hidden = true;
+                exito.hidden = false;
+
+                exito.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+
+            } catch (errorEnvio) {
+                console.error('Error al enviar denuncia:', errorEnvio);
+
+                error.textContent =
+                    errorEnvio.message || 'No se pudo enviar la denuncia.';
+
+                error.hidden = false;
+
+            } finally {
+                boton.disabled = false;
+                boton.textContent = textoOriginal;
+            }
         });
+    
+        // Reconocer coordenadas escritas manualmente.
+        function leerCoordenadas(texto) {
+            const coincidencia = texto.match(
+                /^\s*(-?\d+(?:[.,]\d+)?)\s*[,;]\s*(-?\d+(?:[.,]\d+)?)\s*$/
+            );
+
+            if (!coincidencia) return null;
+
+            const lat = Number(coincidencia[1].replace(',', '.'));
+            const lng = Number(coincidencia[2].replace(',', '.'));
+
+            if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+
+            if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+                return null;
+            }
+
+            return { lat, lng };
+        }
+
+        // Enviar denuncia.
+        form.addEventListener('submit', async event => {
+            event.preventDefault();
+
+            error.hidden = true;
+            error.textContent = '';
+
+            const coordenadas = leerCoordenadas(campoUbicacion.value);
+
+            if (!campoLatitud.value && coordenadas) {
+                campoLatitud.value = coordenadas.lat.toString();
+                campoLongitud.value = coordenadas.lng.toString();
+            }
+
+            if (!campoUbicacion.value.trim()) {
+                error.textContent = 'Escribe la ubicación de la denuncia.';
+                error.hidden = false;
+                return;
+            }
+
+            const textoBoton = boton.textContent;
+
+            boton.disabled = true;
+            boton.textContent = 'Enviando denuncia…';
+
+            try {
+                const datos = new FormData(form);
+
+                console.log('Datos enviados:', {
+                    tipo: datos.get('tipo'),
+                    ubicacion: datos.get('ubicacion'),
+                    lat: datos.get('lat'),
+                    lng: datos.get('lng'),
+                    descripcion: datos.get('descripcion'),
+                    nombre: datos.get('nombre'),
+                    contacto: datos.get('contacto'),
+                    anonimo: datos.get('anonimo'),
+                    tieneFoto: datos.get('foto')?.size > 0
+                });
+
+                const respuesta = await fetch('/api/incidentes/', {
+                    method: 'POST',
+                    body: datos
+                });
+                console.log('Estado HTTP:', respuesta.status);
+                console.log('Respuesta:', await respuesta.clone().text());
+
+                const resultado = await respuesta.json().catch(() => ({}));
+
+                if (!respuesta.ok) {
+                    throw new Error(
+                        resultado.detail ||
+                        resultado.error ||
+                        `Error del servidor: ${respuesta.status}`
+                    );
+                }
+
+                if (!resultado.codigo) {
+                    throw new Error(
+                        'El servidor recibió la solicitud, pero no devolvió el código de seguimiento.'
+                    );
+                }
+
+                document.querySelector('#codd').textContent =
+                    resultado.codigo;
+
+                form.hidden = true;
+                ok.hidden = false;
+
+                ok.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+
+                console.log('Denuncia guardada:', resultado);
+
+            } catch (problema) {
+                console.error('Error al enviar denuncia:', problema);
+
+                error.textContent =
+                    problema.message || 'No se pudo enviar la denuncia.';
+
+                error.hidden = false;
+
+            } finally {
+                boton.disabled = false;
+                boton.textContent = textoBoton;
+            }
+        });
+
     }
+
 
     // Consulta pública: "¿cómo va mi denuncia?"
     function initSeguimiento() {
