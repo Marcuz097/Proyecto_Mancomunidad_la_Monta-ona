@@ -2365,3 +2365,9 @@ html[data-theme=dark] .kp b {
         grid-template-columns: 1fr;
     }
 }
+
+h1:focus,
+h2:focus,
+[tabindex="-1"]:focus {
+    outline: none;
+}
