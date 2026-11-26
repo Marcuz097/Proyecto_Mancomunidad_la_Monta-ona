@@ -11,7 +11,7 @@
     --hoja: #eef5f0;
     --linea: #d6e3da;
     --tinta: #16261e;
-    --suave: #5b6b62;
+    --suave: #5b6b62;++
     --acento: #2f7d4f;
 }
 
@@ -2371,3 +2371,21 @@ h2:focus,
 [tabindex="-1"]:focus {
     outline: none;
 }
+
+.gal {
+    align-items: start;
+}
+
+    .gal figure {
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .gal figure img {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
