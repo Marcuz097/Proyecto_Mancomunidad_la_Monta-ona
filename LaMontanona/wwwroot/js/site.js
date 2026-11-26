@@ -79,10 +79,10 @@
             io.observe(el);
         });
 
-        [initObservatorio, initPlayer, initDenuncia, initSeguimiento].forEach(f => { try { f(); } catch (err) { console.error(err); } });
+        [initPlayer, initDenuncia, initSeguimiento].forEach(f => { try { f(); } catch (err) { console.error(err); } });
     }
 
-    function initObservatorio() {
+    function initPlayer() {
         const horas = $('#horas'); if (!horas || horas.dataset.init) return; horas.dataset.init = '1';
         const ob = $('#observatorio');
         const p = parseInt(ob?.dataset.prob ?? '', 10);
