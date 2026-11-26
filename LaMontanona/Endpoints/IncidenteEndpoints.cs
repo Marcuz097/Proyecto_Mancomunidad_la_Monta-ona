@@ -85,6 +85,7 @@ public static class IncidenteEndpoints
         HttpRequest req,
         ApplicationDbContext db,
         IFileStorageService archivos,
+        INotificacionService notificaciones,
         ILogger<IncidenteEndpointsLog> logger,
         CancellationToken ct)
     {
@@ -225,6 +226,20 @@ public static class IncidenteEndpoints
             logger.LogInformation(
                 "Denuncia guardada correctamente. ID: {Id}",
                 incidente.Id);
+            try
+            {
+                await notificaciones.CrearParaRolesAsync(
+                    new[] { Roles.Admin, Roles.Guardabosque },
+                    "Nueva denuncia ambiental",
+                    $"Se ha recibido una denuncia de tipo: {incidente.Tipo}. Ubicación: {incidente.Ubicacion}.",
+                    "/admin/mapa");
+            }
+            catch (Exception exNotificacion)
+            {
+                logger.LogError(
+                    exNotificacion,
+                    "La denuncia se guardó, pero no se pudo generar la notificación.");
+            }
 
             return Results.Ok(new
             {
@@ -257,6 +272,7 @@ public static class IncidenteEndpoints
                 statusCode: 500);
         }
     }
+
 
     private static async Task<IResult> Seguimiento(
         string codigo,

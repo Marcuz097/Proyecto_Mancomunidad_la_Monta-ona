@@ -35,6 +35,7 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<IParticipanteService, ParticipanteService>();
 builder.Services.AddScoped<IReporteGuardabosqueService, ReporteGuardabosqueService>();
+builder.Services.AddScoped<INotificacionService, NotificacionService>();
 
 builder.Services.AddHttpClient();
 
