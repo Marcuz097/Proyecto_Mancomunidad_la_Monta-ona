@@ -1,0 +1,160 @@
+﻿@page "/notificaciones"
+@attribute [Authorize]
+@using System.Security.Claims
+@using LaMontanona.Services
+@inject AuthenticationStateProvider Auth
+@inject INotificacionService Servicio
+
+<PageTitle>Notificaciones · La Montañona</PageTitle>
+
+<PageBanner Migaja="Notificaciones"
+            Titulo="Centro de notificaciones"
+            Subtitulo="Consulta los avisos y novedades relacionados con tu cuenta."
+            Imagen="/img/login-bg.jpg"
+            Posicion="center 55%" />
+
+<section class="s alt">
+    <div class="wrap notificaciones">
+
+        <div class="notificaciones-cabecera">
+            <div>
+                <h2>Tus notificaciones</h2>
+                <p>Los avisos se muestran únicamente a la cuenta que los recibe.</p>
+            </div>
+
+            <button class="boton cont"
+                    @onclick="MarcarTodas"
+                    disabled="@(_noLeidas == 0)">
+                Marcar todas como leídas
+            </button>
+        </div>
+
+        <div class="notificaciones-resumen">
+            <div class="noti-resumen-card">
+                <span>Pendientes de leer</span>
+                <strong>@_noLeidas</strong>
+            </div>
+
+            <div class="noti-resumen-card">
+                <span>Total de notificaciones</span>
+                <strong>@_notificaciones.Count</strong>
+            </div>
+        </div>
+
+        @if (_cargando)
+        {
+            <div class="noti-vacio">
+                Cargando notificaciones...
+            </div>
+        }
+        else if (_notificaciones.Count == 0)
+        {
+            <div class="noti-vacio">
+                <span class="noti-vacio-icono">🔔</span>
+                <h3>No tienes notificaciones</h3>
+                <p>Cuando haya novedades relacionadas con tu cuenta, aparecerán aquí.</p>
+            </div>
+        }
+        else
+        {
+            <div class="noti-lista">
+                @foreach (var n in _notificaciones)
+                {
+                    <article class="noti-item @(n.Leida ? "leida" : "no-leida")"
+                             @key="n.Id">
+
+                        <div class="noti-icono">
+                            🔔
+                        </div>
+
+                        <div class="noti-contenido">
+                            <div class="noti-titulo-fila">
+                                <h3>@n.Titulo</h3>
+
+                                @if (!n.Leida)
+                                {
+                                    <span class="noti-pendiente">Nueva</span>
+                                }
+                            </div>
+
+                            <p>@n.Mensaje</p>
+
+                            <small>
+                                @n.Fecha.ToLocalTime().ToString("dd/MM/yyyy hh:mm tt")
+                            </small>
+
+                            <div class="noti-acciones">
+                                @if (!string.IsNullOrWhiteSpace(n.Url))
+                                {
+                                    <a href="@n.Url" class="noti-enlace">
+                                        Ver detalles
+                                    </a>
+                                }
+
+                                @if (!n.Leida)
+                                {
+                                    <button type="button"
+                                            class="noti-marcar"
+                                            @onclick="() => MarcarLeida(n.Id)">
+                                        Marcar como leída
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+@code {
+    private List<Notificacion> _notificaciones = new();
+    private string? _usuarioId;
+    private int _noLeidas;
+    private bool _cargando = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var estado = await Auth.GetAuthenticationStateAsync();
+        var usuario = estado.User;
+
+        _usuarioId = usuario.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (!string.IsNullOrWhiteSpace(_usuarioId))
+            await CargarNotificaciones();
+    }
+
+    private async Task CargarNotificaciones()
+    {
+        if (string.IsNullOrWhiteSpace(_usuarioId))
+            return;
+
+        _cargando = true;
+
+        _notificaciones = await Servicio.ObtenerAsync(_usuarioId);
+        _noLeidas = _notificaciones.Count(n => !n.Leida);
+
+        _cargando = false;
+    }
+
+    private async Task MarcarLeida(int id)
+    {
+        if (string.IsNullOrWhiteSpace(_usuarioId))
+            return;
+
+        var resultado = await Servicio.MarcarLeidaAsync(id, _usuarioId);
+
+        if (resultado)
+            await CargarNotificaciones();
+    }
+
+    private async Task MarcarTodas()
+    {
+        if (string.IsNullOrWhiteSpace(_usuarioId))
+            return;
+
+        await Servicio.MarcarTodasLeidasAsync(_usuarioId);
+        await CargarNotificaciones();
+    }
+}

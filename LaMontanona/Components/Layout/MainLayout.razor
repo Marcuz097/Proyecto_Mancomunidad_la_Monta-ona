@@ -3,6 +3,7 @@
 <div class="top">
     <div class="wrap">
         <span>Mancomunidad La Montañona · 25 años cuidando el territorio</span>
+
         <span class="r">
             <a href="tel:23012376">☎ <b>2301-2376</b></a>
             <a href="https://wa.me/50368615665">WhatsApp <b>6861-5665</b></a>
@@ -15,32 +16,62 @@
 
 <header class="cab" id="cab">
     <div class="wrap">
-        <a class="marca" href="" aria-label="La Montañona Mancomunidad · Inicio"><LogoSvg Id="logoCab" /></a>
-        <button type="button" class="burger" id="burger" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu">
-            <svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+
+        <a class="marca" href="" aria-label="La Montañona Mancomunidad · Inicio">
+            <LogoSvg Id="logoCab" />
+        </a>
+
+        <button type="button"
+                class="burger"
+                id="burger"
+                aria-label="Abrir menú"
+                aria-expanded="false"
+                aria-controls="menu">
+            <svg class="i" viewBox="0 0 24 24">
+                <path d="M4 7h16M4 12h16M4 17h16" />
+            </svg>
         </button>
+
         <nav class="menu" id="menu" aria-label="Principal">
+
             <NavLink href="" Match="NavLinkMatch.All">Inicio</NavLink>
             <NavLink href="plan-de-trabajo">Plan de trabajo</NavLink>
             <NavLink href="somos-rio-lempa">Somos Río Lempa</NavLink>
             <NavLink href="alianzas">Alianzas</NavLink>
             <a href="/#noticias">Noticias</a>
             <NavLink href="contacto">Contacto</NavLink>
-                        <AuthorizeView>
+
+            <AuthorizeView>
                 <Authorized>
+
+                    <NavLink href="notificaciones" class="nav-noti">
+                        Notificaciones
+                    </NavLink>
+
                     <AuthorizeView Roles="Admin,Guardabosque" Context="rol">
                         <a href="admin">Panel</a>
                     </AuthorizeView>
+
                     <form method="post" action="/Identity/Account/Logout?returnUrl=%2F">
                         <AntiforgeryToken />
                         <button type="submit" class="acc">Salir</button>
                     </form>
+
                 </Authorized>
+
                 <NotAuthorized>
-                    <a class="acc" href="/Identity/Account/Login" data-enhance-nav="false">Acceso</a>
+                    <a class="acc"
+                       href="/Identity/Account/Login"
+                       data-enhance-nav="false">
+                        Acceso
+                    </a>
                 </NotAuthorized>
             </AuthorizeView>
-            <a class="den" href="contacto#denuncia">Hacer una denuncia</a>
+
+            <a class="den" href="contacto#denuncia">
+                Hacer una denuncia
+            </a>
+
         </nav>
     </div>
 </header>
@@ -54,6 +85,7 @@
                 <div class="lgf"><LogoSvg Id="logoPie" /></div>
                 <p>Protegemos el bosque, el agua y los medios de vida de las familias de la Mancomunidad.</p>
             </div>
+
             <div>
                 <h4>Explora</h4>
                 <a href="plan-de-trabajo">Plan de trabajo</a>
@@ -61,12 +93,14 @@
                 <a href="alianzas">Alianzas</a>
                 <a href="/#noticias">Noticias</a>
             </div>
+
             <div>
                 <h4>Participa</h4>
                 <a href="participantes/registro">Registro de participantes</a>
                 <a href="contacto#denuncia">Reportar un incidente</a>
                 <a href="guardabosques">Acceso de guardabosques</a>
             </div>
+
             <div>
                 <h4>Contacto</h4>
                 <a href="tel:23012376">☎ 2301-2376</a>
@@ -75,11 +109,18 @@
                 <a href="mailto:mancomunidadlamontañona@@outlook.com">mancomunidadlamontañona@@outlook.com</a>
             </div>
         </div>
-        <div class="cp"><span>© 2026 Mancomunidad La Montañona</span><span>Hábitat para comunidad</span></div>
+
+        <div class="cp">
+            <span>© 2026 Mancomunidad La Montañona</span>
+            <span>Hábitat para comunidad</span>
+        </div>
     </div>
 </footer>
 
 <dialog id="visor" aria-label="Vista ampliada">
-    <div class="vh"><strong id="visorTitulo"></strong><button type="button" id="visorCerrar">Cerrar ✕</button></div>
+    <div class="vh">
+        <strong id="visorTitulo"></strong>
+        <button type="button" id="visorCerrar">Cerrar ✕</button>
+    </div>
     <img id="visorFoto" src="" alt="Vista ampliada" />
 </dialog>
